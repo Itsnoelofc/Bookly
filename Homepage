@@ -1,0 +1,1170 @@
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookly – Stories That Live Forever</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap"
+    rel="stylesheet">
+  <style>
+    :root[data-theme="light"] {
+      --bg: #f7f4ff;
+      --bg2: #ede8ff;
+      --surface: #ffffff;
+      --surface2: #f0ebff;
+      --border: #d8cdff;
+      --text: #1a0f3a;
+      --text2: #5a4a8a;
+      --text3: #8a78b8;
+      --accent: #6c3de8;
+      --accent-soft: #9b6ff5;
+      --accent-glow: rgba(108, 61, 232, 0.18);
+      --hero-bg: linear-gradient(135deg, #ede8ff 0%, #f7f4ff 60%, #fdf0ff 100%);
+      --card-shadow: 0 4px 24px rgba(108, 61, 232, 0.10);
+      --nav-bg: rgba(247, 244, 255, 0.88);
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0e0a1f;
+      --bg2: #150e2e;
+      --surface: #1d1538;
+      --surface2: #261d47;
+      --border: #352a5a;
+      --text: #f0ecff;
+      --text2: #b8a8e8;
+      --text3: #7860b8;
+      --accent: #9b6ff5;
+      --accent-soft: #c39dff;
+      --accent-glow: rgba(155, 111, 245, 0.25);
+      --hero-bg: linear-gradient(135deg, #0e0a1f 0%, #150e2e 60%, #1a0a2e 100%);
+      --card-shadow: 0 4px 32px rgba(155, 111, 245, 0.15);
+      --nav-bg: rgba(14, 10, 31, 0.90);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background .4s, color .4s;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding: 0 3rem;
+      height: 64px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      transition: background .4s, border-color .4s;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      text-decoration: none;
+    }
+
+    .nav-logo span {
+      color: var(--text);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.2rem;
+      margin-left: 1rem;
+    }
+
+    .nav-links a {
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      font-size: .92rem;
+      font-weight: 500;
+      color: var(--text2);
+      text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+
+    .nav-links a:hover {
+      background: var(--surface2);
+      color: var(--accent);
+    }
+
+    .nav-search {
+      flex: 1;
+      max-width: 340px;
+      margin-left: auto;
+      position: relative;
+    }
+
+    .nav-search input {
+      width: 100%;
+      padding: .5rem 1rem .5rem 2.6rem;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      transition: border-color .2s, background .4s;
+      outline: none;
+    }
+
+    .nav-search input:focus {
+      border-color: var(--accent);
+    }
+
+    .nav-search svg {
+      position: absolute;
+      left: .8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text3);
+      pointer-events: none;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .btn-ghost {
+      padding: .45rem 1.1rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-primary {
+      padding: .45rem 1.3rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+    }
+
+    .btn-primary:hover {
+      opacity: .88;
+      transform: translateY(-1px);
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text2);
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: var(--hero-bg);
+      display: flex;
+      align-items: center;
+      padding: 100px 3rem 60px;
+      position: relative;
+      overflow: hidden;
+      transition: background .4s;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      right: -100px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 560px;
+      z-index: 1;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      padding: .3rem 1rem;
+      border-radius: 50px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.6rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.12;
+      color: var(--text);
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--text2);
+      margin-bottom: 2rem;
+      max-width: 440px;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-hero {
+      padding: .85rem 2.2rem;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 6px 28px var(--accent-glow);
+    }
+
+    .btn-hero:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 36px var(--accent-glow);
+    }
+
+    .hero-log {
+      color: var(--text2);
+      font-size: .92rem;
+    }
+
+    .hero-log a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* Floating book cards on hero right */
+    .hero-visual {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      min-height: 480px;
+      z-index: 1;
+    }
+
+    .book-stack {
+      position: relative;
+      width: 320px;
+      height: 420px;
+    }
+
+    .book-card {
+      position: absolute;
+      width: 180px;
+      border-radius: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      transition: background .4s, border-color .4s, transform .3s;
+    }
+
+    .book-card:hover {
+      transform: translateY(-6px) rotate(0deg) !important;
+    }
+
+    .book-card:nth-child(1) {
+      top: 0;
+      left: 20px;
+      transform: rotate(-4deg);
+    }
+
+    .book-card:nth-child(2) {
+      top: 60px;
+      left: 120px;
+      transform: rotate(3deg);
+      z-index: 2;
+    }
+
+    .book-card:nth-child(3) {
+      top: 200px;
+      left: 30px;
+      transform: rotate(-2deg);
+    }
+
+    .book-cover {
+      height: 140px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+    }
+
+    .c1 {
+      background: linear-gradient(135deg, #6c3de8, #a855f7);
+    }
+
+    .c2 {
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+    }
+
+    .c3 {
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    }
+
+    .book-info {
+      padding: .75rem;
+    }
+
+    .book-title {
+      font-weight: 700;
+      font-size: .85rem;
+      color: var(--text);
+      margin-bottom: .2rem;
+    }
+
+    .book-author {
+      font-size: .75rem;
+      color: var(--text3);
+      margin-bottom: .4rem;
+    }
+
+    .book-meta {
+      display: flex;
+      gap: .6rem;
+    }
+
+    .book-badge {
+      padding: .15rem .5rem;
+      border-radius: 50px;
+      font-size: .65rem;
+      font-weight: 600;
+      background: var(--surface2);
+      color: var(--accent);
+    }
+
+    /* Comment bubble on hero */
+    .hero-bubble {
+      position: absolute;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: .75rem 1rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      max-width: 220px;
+      animation: float 4s ease-in-out infinite;
+      transition: background .4s, border-color .4s;
+    }
+
+    .hero-bubble:nth-of-type(1) {
+      bottom: 60px;
+      right: 20px;
+      animation-delay: 0s;
+    }
+
+    .hero-bubble:nth-of-type(2) {
+      top: 30px;
+      right: 60px;
+      animation-delay: 2s;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    .bubble-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .bubble-body {
+      flex: 1;
+    }
+
+    .bubble-user {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .bubble-text {
+      font-size: .75rem;
+      color: var(--text2);
+      line-height: 1.4;
+      margin-top: .1rem;
+    }
+
+    .bubble-likes {
+      font-size: .7rem;
+      color: var(--text3);
+      margin-top: .3rem;
+    }
+
+    /* ── GENRE PILLS ── */
+    .genre-bar {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 3rem;
+      display: flex;
+      gap: .75rem;
+      overflow-x: auto;
+      transition: background .4s;
+    }
+
+    .genre-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill {
+      padding: .4rem 1.1rem;
+      border-radius: 50px;
+      font-size: .85rem;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      color: var(--text2);
+      background: var(--surface);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .pill:hover,
+    .pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 4rem 3rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .see-all {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1.5px solid transparent;
+      transition: border-color .2s;
+    }
+
+    .see-all:hover {
+      border-color: var(--accent);
+    }
+
+    /* Book grid */
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1.5rem;
+    }
+    .grid-card-link {
+      text-decoration: none;
+    }
+    .grid-card {
+      border-radius: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .25s, box-shadow .25s, background .4s, border-color .4s;
+    }
+
+    .grid-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-shadow);
+    }
+
+    .grid-cover {
+      height: 180px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+    }
+
+    .grid-info {
+      padding: .8rem;
+    }
+
+    .grid-title {
+      font-weight: 700;
+      font-size: .88rem;
+      color: var(--text);
+      margin-bottom: .2rem;
+      line-height: 1.3;
+    }
+
+    .grid-author {
+      font-size: .75rem;
+      color: var(--text3);
+      margin-bottom: .5rem;
+    }
+
+    .grid-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .3rem;
+    }
+
+    .tag {
+      padding: .15rem .5rem;
+      border-radius: 50px;
+      font-size: .65rem;
+      font-weight: 600;
+      background: var(--surface2);
+      color: var(--accent);
+    }
+
+    /* Featured strip */
+    .featured-strip {
+      background: var(--bg2);
+      transition: background .4s;
+    }
+
+    .featured-card {
+      display: flex;
+      gap: 2.5rem;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: var(--card-shadow);
+      transition: background .4s, border-color .4s;
+    }
+
+    .featured-cover {
+      width: 140px;
+      height: 200px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+
+    .featured-body {
+      flex: 1;
+    }
+
+    .featured-label {
+      display: inline-block;
+      padding: .2rem .8rem;
+      border-radius: 50px;
+      background: var(--accent);
+      color: #fff;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin-bottom: .8rem;
+    }
+
+    .featured-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: .5rem;
+    }
+
+    .featured-author {
+      font-size: .9rem;
+      color: var(--text3);
+      margin-bottom: .8rem;
+    }
+
+    .featured-desc {
+      font-size: .9rem;
+      line-height: 1.7;
+      color: var(--text2);
+      margin-bottom: 1.2rem;
+      max-width: 480px;
+    }
+
+    .featured-stats {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-num {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-lbl {
+      font-size: .72rem;
+      color: var(--text3);
+    }
+
+    /* Writers CTA */
+    .writers-cta {
+      background: linear-gradient(135deg, var(--accent) 0%, #a855f7 100%);
+      border-radius: 24px;
+      padding: 3.5rem;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+      margin: 0 3rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .writers-cta::before {
+      content: '✍️';
+      position: absolute;
+      right: 3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 7rem;
+      opacity: .15;
+      pointer-events: none;
+    }
+
+    .cta-body {
+      flex: 1;
+    }
+
+    .cta-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: .8rem;
+    }
+
+    .cta-sub {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, .85);
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    .btn-white {
+      margin-top: 1.5rem;
+      padding: .8rem 2rem;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      border: none;
+      background: #fff;
+      color: var(--accent);
+      cursor: pointer;
+      transition: transform .2s;
+    }
+
+    .btn-white:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      border-top: 1px solid var(--border);
+      padding: 3rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2rem;
+      background: var(--bg);
+      transition: background .4s, border-color .4s;
+    }
+
+    .footer-brand .nav-logo {
+      font-size: 1.4rem;
+    }
+
+    .footer-tagline {
+      font-size: .88rem;
+      color: var(--text3);
+      margin-top: .5rem;
+      line-height: 1.6;
+    }
+
+    .footer-col h4 {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: .8rem;
+      letter-spacing: .04em;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: .85rem;
+      color: var(--text3);
+      text-decoration: none;
+      margin-bottom: .5rem;
+      transition: color .2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--accent);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .8rem;
+      color: var(--text3);
+      background: var(--bg);
+      transition: background .4s;
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s, transform .6s;
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">Book<span>ly</span></a>
+    <div class="nav-links">
+      <a href="#">Browse</a>
+      <a href="#">Community</a>
+      <a href="#">Contests</a>
+    </div>
+    <div class="nav-search">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input type="text" placeholder="Search stories, authors…">
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <svg id="theme-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    </button>
+      <button class="btn-ghost">Log in</button>
+      <button class="btn-primary">Sign up free</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-tag">✨ 2M+ stories &amp; counting</span>
+      <h1>I'm not being <em>paid </em> enough for this.</h1>
+      <p>Read a bunch of funny books by Reene and the gang. Also Reene how long should this description be? I might have
+        given it
+        too much space...</p>
+      <div class="hero-cta">
+        <button class="btn-hero">Start now!</button>
+        <span class="hero-log">Already a member? <a href="#">Log in</a></span>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="book-stack">
+        <div class="book-card">
+          <div class="book-cover c1">Image or sum</div>
+          <div class="book-info">
+            <div class="book-title">Place Holder</div>
+            <div class="book-author">by Test Subject</div>
+            <div class="book-meta"><span class="book-badge">Romance</span><span class="book-badge">Fantasy</span></div>
+          </div>
+        </div>
+        <div class="book-card">
+          <div class="book-cover c2">Pic type shii</div>
+          <div class="book-info">
+            <div class="book-title">Place Holder</div>
+            <div class="book-author">by Test Subject</div>
+            <div class="book-meta"><span class="book-badge">Thriller</span></div>
+          </div>
+        </div>
+        <div class="book-card">
+          <div class="book-cover c3">Mr right hehe</div>
+          <div class="book-info">
+            <div class="book-title">Place Holder</div>
+            <div class="book-author">by Test Subject</div>
+            <div class="book-meta"><span class="book-badge">Fantasy</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-bubble" style="bottom:40px;right:10px">
+        <div class="bubble-avatar">R</div>
+        <div class="bubble-body">
+          <div class="bubble-user">Reene</div>
+          <div class="bubble-text">You aren't suppossed to see this...</div>
+          <div class="bubble-likes">♥ 142 likes</div>
+        </div>
+      </div>
+      <div class="hero-bubble" style="top:20px;right:40px">
+        <div class="bubble-avatar" style="background:#a855f7">N</div>
+        <div class="bubble-body">
+          <div class="bubble-user">Noel</div>
+          <div class="bubble-text">Idk but this is supposed to be a comment so yeah...</div>
+          <div class="bubble-likes">♥ 89 likes</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GENRE BAR -->
+  <div class="genre-bar">
+    <span class="pill active">All</span>
+    <span class="pill">Romance</span>
+    <span class="pill">Fantasy</span>
+    <span class="pill">Mystery</span>
+    <span class="pill">Thriller</span>
+    <span class="pill">Sci-Fi</span>
+    <span class="pill">Horror</span>
+    <span class="pill">Young Adult</span>
+    <span class="pill">Historical</span>
+    <span class="pill">Short Stories</span>
+    <span class="pill">Poetry</span>
+    <span class="pill">Fan Fiction</span>
+    <span class="pill">Action</span>
+    <span class="pill">Drama</span>
+  </div>
+
+  <!-- TRENDING -->
+  <section>
+    <div class="section-header reveal in">
+      <h2 class="section-title">🔥 Trending Now</h2>
+      <a href="Charts.html" class="see-all">See all →</a>
+    </div>
+    <div class="book-grid reveal in">
+      <a href="View.html" class="grid-card-link"><div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#6c3de8,#a855f7)">🌙</div>
+        <div class="grid-info">
+          <div class="grid-title">Goofy Ahh Niggas</div>
+          <div class="grid-author">by noel_writes</div>
+          <div class="grid-tags"><span class="tag">Action</span><span class="tag">Sci-Fi</span></div>
+        </div>
+      </div>
+      </a>
+      <a href="#" class="grid-card-link">
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#7c3aed,#ec4899)">🗡️</div>
+        <div class="grid-info">
+          <div class="grid-title">Miguel's Demise</div>
+          <div class="grid-author">by DontMindTheBooksName</div>
+          <div class="grid-tags"><span class="tag">Fantasy</span><span class="tag">Action</span></div>
+        </div>
+      </div>
+      </a>
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#4f46e5,#06b6d4)">🚀</div>
+        <div class="grid-info">
+          <div class="grid-title">Bookly Rulebook</div>
+          <div class="grid-author">by Bookly</div>
+          <div class="grid-tags"><span class="tag">Rulebook?</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#dc2626,#6c3de8)">🔍</div>
+        <div class="grid-info">
+          <div class="grid-title">The Silent Song</div>
+          <div class="grid-author">by LeonardKibera</div>
+          <div class="grid-tags"><span class="tag">Confusing</span><span class="tag">Setbook 💔🥀</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#059669,#6c3de8)">🌿</div>
+        <div class="grid-info">
+          <div class="grid-title">Among Us</div>
+          <div class="grid-author">by AmongUsGang</div>
+          <div class="grid-tags"><span class="tag">Historical</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#d97706,#7c3aed)">👻</div>
+        <div class="grid-info">
+          <div class="grid-title">Stranger Things</div>
+          <div class="grid-author">by Netflix</div>
+          <div class="grid-tags"><span class="tag">Horror</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED -->
+  <section class="featured-strip">
+    <div class="section-header reveal in">
+      <h2 class="section-title">⭐ Editor's Pick</h2>
+      <a href="#" class="see-all">See all picks →</a>
+    </div>
+    <div class="featured-card reveal in">
+      <div class="featured-cover" style="background:linear-gradient(135deg,#6c3de8,#ec4899)">🌌</div>
+      <div class="featured-body">
+        <span class="featured-label">Editor's Pick</span>
+        <div class="featured-title">I Love You Mr. Right</div>
+        <div class="featured-author">by Reene — Romance · Comedy · 67 chapters</div>
+        <div class="featured-desc">
+          To be honest nimesahau storyline so I'll have to re-read the whole shit. But yeah this is supposed to be a
+          descripton for the story
+        </div>
+        <div class="featured-stats">
+          <div class="stat"><span class="stat-num">4.2M</span><span class="stat-lbl">Reads</span></div>
+          <div class="stat"><span class="stat-num">67K</span><span class="stat-lbl">Likes</span></div>
+          <div class="stat"><span class="stat-num">21K</span><span class="stat-lbl">Comments</span></div>
+        </div>
+        <button class="btn-primary" style="margin-top:1.2rem;padding:.65rem 1.8rem;border-radius:50px">Read now</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW ARRIVALS -->
+  <section>
+    <div class="section-header reveal in">
+      <h2 class="section-title">✨ Newly Updated</h2>
+      <a href="#" class="see-all">See all →</a>
+    </div>
+    <div class="book-grid reveal in">
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#0ea5e9,#6c3de8)">🌊</div>
+        <div class="grid-info">
+          <div class="grid-title">ICEMAN</div>
+          <div class="grid-author">by Drake</div>
+          <div class="grid-tags"><span class="tag">Adventure</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#f472b6,#6c3de8)">💌</div>
+        <div class="grid-info">
+          <div class="grid-title">Dear Diary</div>
+          <div class="grid-author">by AbdulMohhunmedAli?</div>
+          <div class="grid-tags"><span class="tag">Romance</span><span class="tag">Drama</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#84cc16,#0ea5e9)">🧬</div>
+        <div class="grid-info">
+          <div class="grid-title">GenZ</div>
+          <div class="grid-author">by Kenya</div>
+          <div class="grid-tags"><span class="tag">Sci-Fi</span><span class="tag">Thriller</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#f59e0b,#ec4899)">🎭</div>
+        <div class="grid-info">
+          <div class="grid-title">Stage Fright</div>
+          <div class="grid-author">by DramaFestival</div>
+          <div class="grid-tags"><span class="tag">Drama</span><span class="tag">YA</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#6c3de8,#14b8a6)">🏰</div>
+        <div class="grid-info">
+          <div class="grid-title">Merlin</div>
+          <div class="grid-author">by idk who made it</div>
+          <div class="grid-tags"><span class="tag">Historical</span><span class="tag">Romance</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-cover" style="background:linear-gradient(135deg,#7c3aed,#d97706)">📜</div>
+        <div class="grid-info">
+          <div class="grid-title">Game of Thrones</div>
+          <div class="grid-author">by Also forgot the writer</div>
+          <div class="grid-tags"><span class="tag">Fantasy</span><span class="tag">Mystery</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRITERS CTA -->
+  <div class="writers-cta reveal in">
+    <div class="cta-body">
+      <div class="cta-title">Your story deserves to be read.</div>
+      <div class="cta-sub">Join 500,000+ writers on Bookly. Upload chapters, build a fanbase, get real feedback — all
+        for free. Your readers are already here, waiting.</div>
+      <button class="btn-white">Start writing today →</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">
+      <a class="nav-logo" href="#">Book<span>ly</span></a>
+      <p class="footer-tagline">Where every story finds<br>its reader. Since 2026.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Discover</h4>
+      <a href="#">Browse stories</a>
+      <a href="#">New releases</a>
+      <a href="#">Editor's picks</a>
+      <a href="#">Leaderboards</a>
+      <a href="#">Contests</a>
+    </div>
+    <div class="footer-col">
+      <h4>Write</h4>
+      <a href="#">Start a story</a>
+      <a href="#">Writer's hub</a>
+      <a href="#">Writing tips</a>
+      <a href="#">Bookly Pro</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About us</a>
+      <a href="#">Blog</a>
+      <a href="#">Careers</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </footer>
+  <div class="footer-bottom">
+    <span>© 2026 Bookly. All rights reserved.</span>
+    <span>Made with 💜 by <em>Eclipse Network</em></span>
+  </div>
+
+  <script>
+    // Theme toggle
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    const icon = document.getElementById('theme-icon');
+    if (!isDark) {
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    } else {
+      icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    }
+  }
+
+  // Genre pill interaction
+  document.querySelectorAll('.pill').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+      p.classList.add('active');
+    });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+
+</html>
