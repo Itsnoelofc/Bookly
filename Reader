@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-font="serif" data-size="md">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookly – Read: Goofy Ahh Nigga</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;family=DM+Sans:wght@300;400;500;600&amp;family=Crimson+Pro:ital,wght@0,400;0,600;1,400&amp;display=swap"
+    rel="stylesheet">
+  <style>
+    /* ══════════════════════════════════════
+   THEME TOKENS
+══════════════════════════════════════ */
+    :root[data-theme="light"] {
+      --bg: #faf8f5;
+      --page: #fffef9;
+      --surface: #ffffff;
+      --surface2: #f3f0ea;
+      --border: #e5dfd4;
+      --text: #1c1510;
+      --text2: #5a4f44;
+      --text3: #9a8f84;
+      --accent: #6c3de8;
+      --accent-soft: rgba(108, 61, 232, 0.12);
+      --accent-glow: rgba(108, 61, 232, 0.20);
+      --nav-bg: rgba(250, 248, 245, 0.92);
+      --bar-bg: #e8e3da;
+      --drop-shadow: 0 2px 24px rgba(28, 21, 16, 0.08);
+      --reading-text: #1c1510;
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #110f0c;
+      --page: #1a1714;
+      --surface: #221f1b;
+      --surface2: #2c2924;
+      --border: #3a352f;
+      --text: #f0ece5;
+      --text2: #b0a898;
+      --text3: #6e6358;
+      --accent: #9b6ff5;
+      --accent-soft: rgba(155, 111, 245, 0.15);
+      --accent-glow: rgba(155, 111, 245, 0.25);
+      --nav-bg: rgba(17, 15, 12, 0.94);
+      --bar-bg: #2c2924;
+      --drop-shadow: 0 2px 32px rgba(0, 0, 0, 0.4);
+      --reading-text: #e8e2d8;
+    }
+
+    :root[data-theme="sepia"] {
+      --bg: #f5ead8;
+      --page: #fdf5e6;
+      --surface: #fdf5e6;
+      --surface2: #ede0c4;
+      --border: #d4c4a8;
+      --text: #3d2b1f;
+      --text2: #6b4c38;
+      --text3: #a0846a;
+      --accent: #8b4513;
+      --accent-soft: rgba(139, 69, 19, 0.12);
+      --accent-glow: rgba(139, 69, 19, 0.22);
+      --nav-bg: rgba(245, 234, 216, 0.92);
+      --bar-bg: #d4c4a8;
+      --drop-shadow: 0 2px 24px rgba(61, 43, 31, 0.10);
+      --reading-text: #3d2b1f;
+    }
+
+    /* Font size variants */
+    :root[data-size="sm"] {
+      --read-size: 0.92rem;
+      --read-lh: 1.85;
+    }
+
+    :root[data-size="md"] {
+      --read-size: 1.08rem;
+      --read-lh: 1.9;
+    }
+
+    :root[data-size="lg"] {
+      --read-size: 1.22rem;
+      --read-lh: 1.95;
+    }
+
+    :root[data-size="xl"] {
+      --read-size: 1.38rem;
+      --read-lh: 2.0;
+    }
+
+    /* Font family variants */
+    :root[data-font="serif"] {
+      --read-font: 'Lora', Georgia, serif;
+    }
+
+    :root[data-font="crimson"] {
+      --read-font: 'Crimson Pro', Georgia, serif;
+    }
+
+    :root[data-font="playfair"] {
+      --read-font: 'Playfair Display', Georgia, serif;
+    }
+
+    :root[data-font="sans"] {
+      --read-font: 'DM Sans', sans-serif;
+    }
+
+    /* Width variants */
+    :root[data-width="narrow"] {
+      --content-max: 580px;
+    }
+
+    :root[data-width="medium"] {
+      --content-max: 700px;
+    }
+
+    :root[data-width="wide"] {
+      --content-max: 840px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background .35s, color .35s;
+    }
+
+    /* ── READING PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 200;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #a855f7);
+      transition: width .1s linear;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* ── TOP NAV ── */
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      gap: 1rem;
+      background: var(--nav-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      transition: background .35s, border-color .35s, transform .3s;
+    }
+
+    .top-nav.hidden {
+      transform: translateY(-100%);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--accent);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .nav-logo span {
+      color: var(--text);
+    }
+
+    .nav-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      color: var(--text3);
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .nav-breadcrumb a {
+      color: var(--text3);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color .2s;
+    }
+
+    .nav-breadcrumb a:hover {
+      color: var(--accent);
+    }
+
+    .nav-breadcrumb .sep {
+      color: var(--border);
+    }
+
+    .nav-breadcrumb .current {
+      color: var(--text2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .nav-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text2);
+      transition: all .2s;
+      position: relative;
+    }
+
+    .nav-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .nav-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .nav-btn .tooltip {
+      position: absolute;
+      bottom: -32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: .25rem .6rem;
+      border-radius: 6px;
+      font-size: .7rem;
+      color: var(--text2);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+
+    .nav-btn:hover .tooltip {
+      opacity: 1;
+    }
+
+    /* ── SETTINGS PANEL ── */
+    .settings-panel {
+      position: fixed;
+      top: 64px;
+      right: 1.2rem;
+      z-index: 99;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.4rem;
+      width: 290px;
+      box-shadow: var(--drop-shadow);
+      display: none;
+      animation: panelIn .2s ease both;
+    }
+
+    .settings-panel.open {
+      display: block;
+    }
+
+    @keyframes panelIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px) scale(.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .sp-title {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text3);
+      margin-bottom: .9rem;
+    }
+
+    .sp-row {
+      margin-bottom: 1.1rem;
+    }
+
+    .sp-label {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: .5rem;
+      display: block;
+    }
+
+    /* Theme chips */
+    .chip-row {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      padding: .35rem .85rem;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      color: var(--text2);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Slider */
+    .sp-slider {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    /* Font preview chips */
+    .font-chip {
+      flex: 1;
+      padding: .4rem .6rem;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      color: var(--text2);
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all .2s;
+    }
+
+    .font-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .font-chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .font-chip.f-serif {
+      font-family: 'Lora', serif;
+    }
+
+    .font-chip.f-crimson {
+      font-family: 'Crimson Pro', serif;
+    }
+
+    .font-chip.f-playfair {
+      font-family: 'Playfair Display', serif;
+    }
+
+    .font-chip.f-sans {
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .reader-wrap {
+      display: flex;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 80px 1.5rem 4rem;
+      gap: 2rem;
+    }
+
+    /* ── LEFT SIDEBAR – Chapter list ── */
+    .sidebar-left {
+      width: 230px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 72px;
+      height: calc(100vh - 80px);
+      overflow-y: auto;
+      padding-right: .5rem;
+    }
+
+    .sidebar-left::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar-left::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar-left::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .sidebar-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .sidebar-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text3);
+      margin-bottom: .6rem;
+      padding-bottom: .4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .book-meta-mini {
+      margin-bottom: 1rem;
+    }
+
+    .bmm-cover {
+      width: 100%;
+      height: 110px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #6c3de8, #a855f7, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin-bottom: .6rem;
+    }
+
+    .bmm-title {
+      font-family: 'Playfair Display', serif;
+      font-size: .92rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: .2rem;
+      line-height: 1.3;
+    }
+
+    .bmm-author {
+      font-size: .76rem;
+      color: var(--text3);
+    }
+
+    .bmm-stats {
+      display: flex;
+      gap: .8rem;
+      margin-top: .4rem;
+    }
+
+    .bmm-stat {
+      font-size: .72rem;
+      color: var(--text3);
+    }
+
+    .bmm-stat span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+    }
+
+    .ch-item {
+      padding: .5rem .7rem;
+      border-radius: 8px;
+      font-size: .82rem;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      text-decoration: none;
+    }
+
+    .ch-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .ch-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .ch-num {
+      font-size: .68rem;
+      color: var(--text3);
+      width: 18px;
+      flex-shrink: 0;
+    }
+
+    .ch-item.active .ch-num {
+      color: var(--accent);
+      opacity: .7;
+    }
+
+    .ch-lock {
+      margin-left: auto;
+      font-size: .7rem;
+      opacity: .6;
+    }
+
+    /* ── READING CONTENT ── */
+    .reading-area {
+      flex: 1;
+      min-width: 0;
+      max-width: var(--content-max, 700px);
+      margin: 0 auto;
+    }
+
+    .chapter-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .ch-book-label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: .4rem;
+    }
+
+    .ch-number {
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--text3);
+      margin-bottom: .6rem;
+    }
+
+    .ch-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .ch-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .ch-divider {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .ch-divider::before,
+    .ch-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .ch-divider-icon {
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    .ch-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .ch-badge {
+      padding: .2rem .7rem;
+      border-radius: 50px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: .72rem;
+      font-weight: 700;
+    }
+
+    .ch-date {
+      font-size: .78rem;
+      color: var(--text3);
+    }
+
+    .ch-reads {
+      font-size: .78rem;
+      color: var(--text3);
+    }
+
+    /* ── PROSE ── */
+    .prose {
+      font-family: var(--read-font, 'Lora', serif);
+      font-size: var(--read-size, 1.08rem);
+      line-height: var(--read-lh, 1.9);
+      color: var(--reading-text);
+      transition: font-size .2s, line-height .2s, color .35s, font-family .2s;
+    }
+
+    .prose p {
+      margin-bottom: 1.4em;
+    }
+
+    .prose p:first-child::first-letter {
+      font-family: 'Playfair Display', serif;
+      font-size: 4em;
+      font-weight: 900;
+      float: left;
+      line-height: .85;
+      margin: .05em .12em -.05em 0;
+      color: var(--accent);
+    }
+
+    .prose .scene-break {
+      text-align: center;
+      color: var(--text3);
+      letter-spacing: .3em;
+      margin: 2em 0;
+      font-size: .85em;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .prose em {
+      font-style: italic;
+    }
+
+    .prose strong {
+      font-weight: 700;
+    }
+
+    .prose .dialogue {
+      color: var(--text);
+    }
+
+    /* Highlighted text (from selection) */
+    ::selection {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    /* ── CHAPTER NAV ── */
+    .chapter-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 3.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      gap: 1rem;
+    }
+
+    .ch-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .7rem 1.4rem;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text2);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      font-weight: 600;
+      transition: all .2s;
+      text-decoration: none;
+    }
+
+    .ch-nav-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .ch-nav-btn.next {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .ch-nav-btn.next:hover {
+      opacity: .88;
+      transform: translateY(-1px);
+    }
+
+    .ch-nav-center {
+      text-align: center;
+      font-size: .78rem;
+      color: var(--text3);
+    }
+
+    .ch-nav-center strong {
+      display: block;
+      color: var(--text);
+      font-size: .88rem;
+    }
+
+    /* ── RIGHT SIDEBAR – Comments ── */
+    .sidebar-right {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 72px;
+      height: calc(100vh - 80px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .sidebar-right::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar-right::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .action-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.1rem;
+      transition: background .35s, border-color .35s;
+    }
+
+    .ac-title {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text3);
+      margin-bottom: .8rem;
+    }
+
+    /* Reactions */
+    .reactions {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .reaction-btn {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .55rem .8rem;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      cursor: pointer;
+      transition: all .2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .reaction-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      transform: translateX(3px);
+    }
+
+    .reaction-btn.liked {
+      border-color: #e879a0;
+      background: rgba(232, 121, 160, .12);
+    }
+
+    .rb-emoji {
+      font-size: 1.1rem;
+    }
+
+    .rb-label {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text2);
+      flex: 1;
+    }
+
+    .rb-count {
+      font-size: .78rem;
+      color: var(--text3);
+      font-weight: 600;
+    }
+
+    .reaction-btn.liked .rb-count {
+      color: #e879a0;
+    }
+
+    /* Comments */
+    .comment-list {
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+      margin-bottom: .8rem;
+    }
+
+    .comment {
+      display: flex;
+      gap: .55rem;
+      animation: cmtIn .3s ease both;
+    }
+
+    @keyframes cmtIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .cmt-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .cmt-body {
+      flex: 1;
+    }
+
+    .cmt-user {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .cmt-text {
+      font-size: .78rem;
+      color: var(--text2);
+      line-height: 1.5;
+      margin-top: .1rem;
+    }
+
+    .cmt-like {
+      font-size: .7rem;
+      color: var(--text3);
+      margin-top: .25rem;
+      cursor: pointer;
+      transition: color .2s;
+    }
+
+    .cmt-like:hover {
+      color: #e879a0;
+    }
+
+    .comment-input-wrap {
+      display: flex;
+      gap: .5rem;
+      align-items: flex-end;
+    }
+
+    .comment-input {
+      flex: 1;
+      padding: .55rem .75rem;
+      border-radius: 10px;
+      border: 1.5px solid var(--input-border, var(--border));
+      background: var(--surface2);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .82rem;
+      resize: none;
+      outline: none;
+      min-height: 38px;
+      max-height: 100px;
+      transition: border-color .2s;
+    }
+
+    .comment-input:focus {
+      border-color: var(--accent);
+    }
+
+    .comment-input::placeholder {
+      color: var(--text3);
+    }
+
+    .comment-send {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      flex-shrink: 0;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+    }
+
+    .comment-send:hover {
+      opacity: .85;
+      transform: scale(1.05);
+    }
+
+    /* ── FOOTER FLOATING BAR (mobile) ── */
+    .float-bar {
+      display: none;
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: .5rem 1rem;
+      box-shadow: var(--drop-shadow);
+      gap: 1rem;
+      align-items: center;
+      z-index: 90;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .sidebar-right {
+        display: none;
+      }
+    }
+
+    @media (max-width: 750px) {
+      .sidebar-left {
+        display: none;
+      }
+
+      .float-bar {
+        display: flex;
+      }
+
+      .reading-area {
+        padding: 0 .2rem;
+      }
+
+      .reader-wrap {
+        padding: 68px .8rem 5rem;
+      }
+    }
+
+    /* ── SCROLL-HIDE NAV ── */
+    .scroll-hint {
+      position: fixed;
+      bottom: 5rem;
+      right: 1.5rem;
+      z-index: 80;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: .4rem 1rem;
+      font-size: .75rem;
+      color: var(--text3);
+      box-shadow: var(--drop-shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .4s, transform .4s;
+      pointer-events: none;
+    }
+
+    .scroll-hint.show {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+
+<body dir="ltr" spellcheck="false" style="direction: ltr; min-height: 901px;">
+
+  <!-- PROGRESS -->
+  <div id="progress-bar"><br></div>
+
+  <!-- TOP NAV -->
+  <nav class="top-nav" id="top-nav">
+    <a class="nav-logo" href="bookly.html">Book<span>ly</span></a>
+    <div class="nav-breadcrumb">
+      <a href="#">Library</a>
+      <span class="sep">›</span>
+      <a href="View.html">Goofy Ahh Nigga</a>
+      <span class="sep">›</span>
+      <span class="current">Chapter 1 – The  Goof called Reene</span>
+    </div>
+    <div class="nav-actions">
+      <button class="nav-btn" onclick="toggleSettings()" id="settings-btn" title="Reading settings">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      <span class="tooltip">Reading settings</span>
+    </button>
+      <button class="nav-btn" onclick="toggleBookmark(this)" title="Bookmark">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+      <span class="tooltip">Bookmark</span>
+    </button>
+      <button class="nav-btn" title="Share">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+      <span class="tooltip">Share</span>
+    </button>
+    </div>
+  </nav>
+
+  <!-- SETTINGS PANEL -->
+  <div class="settings-panel" id="settings-panel">
+    <div class="sp-title">Reading Settings</div>
+
+    <div class="sp-row">
+      <span class="sp-label">Theme</span>
+      <div class="chip-row">
+        <button class="chip active" onclick="setTheme('light',this)">☀️ Light</button>
+        <button class="chip" onclick="setTheme('dark',this)">🌙 Dark</button>
+        <button class="chip" onclick="setTheme('sepia',this)">📜 Sepia</button>
+      </div>
+    </div>
+
+    <div class="sp-row">
+      <span class="sp-label">Font</span>
+      <div class="chip-row">
+        <button class="font-chip f-serif active" onclick="setFont('serif',this)">Lora</button>
+        <button class="font-chip f-crimson" onclick="setFont('crimson',this)">Crimson</button>
+        <button class="font-chip f-playfair" onclick="setFont('playfair',this)">Playfair</button>
+        <button class="font-chip f-sans" onclick="setFont('sans',this)">Sans</button>
+      </div>
+    </div>
+
+    <div class="sp-row">
+      <span class="sp-label">Text size</span>
+      <div class="chip-row">
+        <button class="chip" onclick="setSize('sm',this)" style="font-size:.75rem">A</button>
+        <button class="chip active" onclick="setSize('md',this)">A</button>
+        <button class="chip" onclick="setSize('lg',this)" style="font-size:1rem">A</button>
+        <button class="chip" onclick="setSize('xl',this)" style="font-size:1.1rem">A</button>
+      </div>
+    </div>
+
+    <div class="sp-row">
+      <span class="sp-label">Line width</span>
+      <div class="chip-row">
+        <button class="chip" onclick="setWidth('narrow',this)">Narrow</button>
+        <button class="chip active" onclick="setWidth('medium',this)">Medium</button>
+        <button class="chip" onclick="setWidth('wide',this)">Wide</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- READER LAYOUT -->
+  <div class="reader-wrap">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar-left">
+      <div class="sidebar-section">
+        <div class="sidebar-label">About this book</div>
+        <div class="book-meta-mini">
+          <div class="bmm-cover">🌙</div>
+          <div class="bmm-title">Goofy Ahh Nigga</div>
+          <div class="bmm-author">by noel_writes</div>
+          <div class="bmm-stats">
+            <div class="bmm-stat">❤️ <span>98K</span></div>
+            <div class="bmm-stat">👁 <span>4.1M</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Chapters</div>
+        <div class="chapter-list">
+          <a class="ch-item active" href="#"><span class="ch-num">1</span>The Goof Called Reene</a>
+          <a class="ch-item" href="#"><span class="ch-num">2</span>The Garden of Mom</a>
+                    <a class="ch-item" href="#"><span class="ch-num">3</span>The First Negro</a>
+          <a class="ch-item" href="#"><span class="ch-num">4</span>What the Moon Hides</a>
+          <a class="ch-item" href="#"><span class="ch-num">5</span>Ink and Starlight</a>
+          <a class="ch-item" href="#"><span class="ch-num">6</span>The Warden's Price</a>
+          <a class="ch-item" href="#"><span class="ch-num">7</span>Through the Veil</a>
+          <a class="ch-item" href="#"><span class="ch-num">8</span>A Debt in Petals <span class="ch-lock">🔒</span></a>
+          <a class="ch-item" href="#"><span class="ch-num">9</span>The Second Bloom <span class="ch-lock">🔒</span></a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- READING AREA -->
+    <main class="reading-area" id="reading-area">
+
+      <header class="chapter-header">
+        <div class="ch-book-label">Goofy Ahh Nigga</div>
+        <div class="ch-number">Chapter One</div>
+        <h1 class="ch-title">The Goof Called <em>Reene</em></h1>
+        <div class="ch-divider"><span class="ch-divider-icon">✦</span></div>
+        <div class="ch-meta-row">
+          <span class="ch-badge">Romance · Fantasy</span>
+          <span class="ch-date">Updated May 14, 2026</span>
+          <span class="ch-reads">👁 412K reads</span>
+        </div>
+      </header>
+
+      <article class="prose" id="prose-content">
+
+        <p>Noel had grown used to competition, but Reeene was different from anyone he had faced before.
+
+          She was his rival—but an unpredictable one.
+
+          Reene never stayed consistent. On some days, she would confidently declare herself better than Noel, analyzing
+          his work
+          and pointing out every flaw she could imagine. On other days, she would completely reverse her position,
+          saying she
+          wasn’t even interested in competition and that people were overthinking the rivalry.
+
+        </p>
+        <p>It left everyone around her confused.
+
+          Even Noel couldn’t fully read her.
+
+          At one point, Reene would praise his latest project, saying it was impressive and “almost untouchable.” The
+          next moment,
+          she would question how it even made it to the top, as if she had forgotten her earlier words.
+        </p>
+
+        <p>Noel stopped trying to predict her behavior.
+
+          Instead, he focused on his own path.
+
+          While Reene jumped between ideas, starting projects and abandoning them halfway, Noel kept building steadily.
+          His
+          consistency became his advantage. Every new release showed growth, while Reene’s shifting attention made her
+          progress
+          hard to measure.
+        </p>
+        <p><br></p>
+
+        <p>Their rivalry became something people talked about online. Some fans argued that Reene had potential to
+          surpass Noel if
+          she ever stayed focused. Others believed Noel had already pulled too far ahead.
+        </p>
+
+        <p>Reene, hearing all of this, would sometimes laugh it off and say she didn’t care. Other times, she would take
+          it
+          personally and promise she would prove everyone wrong. But those promises often faded as quickly as they came.
+          .</p>
+
+        <div class="scene-break">✦ ✦ ✦</div>
+
+        <p>Noel noticed something over time: Reene wasn’t truly lacking talent—she was just caught in her own
+          uncertainty. She
+          couldn’t decide whether she wanted to compete, improve, or step away entirely.
+
+          And that indecision shaped everything she did.
+
+        </p>
+
+        <p>Noel, on the other hand, had already chosen his direction.
+
+          So while Reene kept shifting between versions of herself, Noel simply kept moving forward—quietly, steadily,
+          and without
+          distraction.
+
+          And in the end, that difference mattered more than anything they said about each other</p>
+
+      </article>
+
+      <!-- CHAPTER NAVIGATION -->
+      <nav class="chapter-nav">
+        <a class="ch-nav-btn prev" href="#">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Chapter 9
+        </a>
+        <div class="ch-nav-center">
+          <strong>Chapter 1 of 9</strong>
+          You're reading Goofy Ahh Nigga
+        </div>
+        <a class="ch-nav-btn next" href="#">
+          Chapter 2
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
+      </nav>
+
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="sidebar-right">
+
+      <!-- Reactions -->
+      <div class="action-card">
+        <div class="ac-title">React to this chapter</div>
+        <div class="reactions">
+          <button class="reaction-btn liked" onclick="toggleLike(this)">
+          <span class="rb-emoji">❤️</span>
+          <span class="rb-label">Love it</span>
+          <span class="rb-count">18.2K</span>
+        </button>
+          <button class="reaction-btn" onclick="toggleLike(this)">
+          <span class="rb-emoji">🔥</span>
+          <span class="rb-label">This is fire</span>
+          <span class="rb-count">9.4K</span>
+        </button>
+          <button class="reaction-btn" onclick="toggleLike(this)">
+          <span class="rb-emoji">😭</span>
+          <span class="rb-label">I'm emotional</span>
+          <span class="rb-count">6.1K</span>
+        </button>
+          <button class="reaction-btn" onclick="toggleLike(this)">
+          <span class="rb-emoji">👀</span>
+          <span class="rb-label">The tension!</span>
+          <span class="rb-count">11.8K</span>
+        </button>
+        </div>
+      </div>
+
+      <!-- Comments -->
+      <div class="action-card" style="flex:1">
+        <div class="ac-title">Comments <span style="color:var(--accent);font-weight:700">412</span></div>
+        <div class="comment-list" id="comment-list">
+          <div class="comment">
+            <div class="cmt-avatar" style="background:linear-gradient(135deg,#6c3de8,#a855f7)">M</div>
+            <div class="cmt-body">
+              <div class="cmt-user">miguel_theartist</div>
+              <div class="cmt-text">I don't understand anything but eh.</div>
+              <div class="cmt-like">♥ 847</div>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="cmt-avatar" style="background:linear-gradient(135deg,#ec4899,#f97316)">D</div>
+            <div class="cmt-body">
+              <div class="cmt-user">drake</div>
+              <div class="cmt-text">ICEMAN</div>
+              <div class="cmt-like">♥ 3K</div>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="cmt-avatar" style="background:linear-gradient(135deg,#0ea5e9,#6c3de8)">F</div>
+            <div class="cmt-body">
+              <div class="cmt-user">frankocean</div>
+              <div class="cmt-text">It's the same way everyday goes, everytime we've no control, If the sky is pink and
+                white, If the ground is black and yellow</div>
+              <div class="cmt-like">♥ 1.2K</div>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="cmt-avatar" style="background:linear-gradient(135deg,#059669,#0ea5e9)">N</div>
+            <div class="cmt-body">
+              <div class="cmt-user">natalia</div>
+              <div class="cmt-text">Reene would have done better smh 🤣🤣</div>
+              <div class="cmt-like">♥ 390</div>
+            </div>
+          </div>
+        </div>
+        <div class="comment-input-wrap">
+          <textarea class="comment-input" id="comment-input" placeholder="Leave a comment…" rows="1" oninput="autoResize(this)" onkeydown="sendOnEnter(event)"></textarea>
+          <button class="comment-send" onclick="postComment()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- SCROLL HINT -->
+  <div class="scroll-hint" id="scroll-hint">↓ Keep reading</div>
+
+
+
+
+</body>
+
+</html>
