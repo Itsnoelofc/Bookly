@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookly – Goofy Ahh Nigga</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap"
+    rel="stylesheet">
+  <style>
+    :root[data-theme="light"] {
+      --bg: #f7f4ff;
+      --bg2: #ede8ff;
+      --surface: #ffffff;
+      --surface2: #f0ebff;
+      --border: #d8cdff;
+      --text: #1a0f3a;
+      --text2: #5a4a8a;
+      --text3: #8a78b8;
+      --accent: #6c3de8;
+      --accent-soft: #9b6ff5;
+      --accent-glow: rgba(108, 61, 232, 0.18);
+      --card-shadow: 0 4px 24px rgba(108, 61, 232, 0.10);
+      --nav-bg: rgba(247, 244, 255, 0.88);
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0e0a1f;
+      --bg2: #150e2e;
+      --surface: #1d1538;
+      --surface2: #261d47;
+      --border: #352a5a;
+      --text: #f0ecff;
+      --text2: #b8a8e8;
+      --text3: #7860b8;
+      --accent: #9b6ff5;
+      --accent-soft: #c39dff;
+      --accent-glow: rgba(155, 111, 245, 0.25);
+      --card-shadow: 0 4px 32px rgba(155, 111, 245, 0.15);
+      --nav-bg: rgba(14, 10, 31, 0.90);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background .4s, color .4s;
+      overflow-x: hidden;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding: 0 3rem;
+      height: 64px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      transition: background .4s, border-color .4s;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      text-decoration: none;
+    }
+
+    .nav-logo span {
+      color: var(--text);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: .2rem;
+      margin-left: 1rem;
+    }
+
+    .nav-links a {
+      padding: .4rem 1rem;
+      border-radius: 8px;
+      font-size: .92rem;
+      font-weight: 500;
+      color: var(--text2);
+      text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+
+    .nav-links a:hover {
+      background: var(--surface2);
+      color: var(--accent);
+    }
+
+    .nav-search {
+      flex: 1;
+      max-width: 340px;
+      margin-left: auto;
+      position: relative;
+    }
+
+    .nav-search input {
+      width: 100%;
+      padding: .5rem 1rem .5rem 2.6rem;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      transition: border-color .2s, background .4s;
+      outline: none;
+    }
+
+    .nav-search input:focus {
+      border-color: var(--accent);
+    }
+
+    .nav-search svg {
+      position: absolute;
+      left: .8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text3);
+      pointer-events: none;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .button-click {
+      text-decoration: none;
+    }
+
+    .btn-ghost {
+      padding: .45rem 1.1rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-primary {
+      padding: .45rem 1.3rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+    }
+
+    .btn-primary:hover {
+      opacity: .88;
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text2);
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .page-body {
+      padding-top: 64px;
+    }
+
+    .book-hero {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 3rem;
+      display: flex;
+      gap: 2.5rem;
+      align-items: flex-start;
+      transition: background .4s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-hero::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 65%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .cover-wrap {
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .book-cover-img {
+      width: 180px;
+      height: 260px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #6c3de8, #a855f7, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      box-shadow: 0 12px 40px var(--accent-glow), 0 4px 12px rgba(0, 0, 0, .15);
+      transition: transform .3s;
+    }
+
+    .book-cover-img:hover {
+      transform: scale(1.03) rotate(-1deg);
+    }
+
+    .hero-info {
+      flex: 1;
+      z-index: 1;
+    }
+
+    .original-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .28rem .85rem;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin-bottom: .8rem;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    .original-badge svg {
+      flex-shrink: 0;
+    }
+
+    .book-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: .5rem;
+    }
+
+    .author-row {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: 1rem;
+    }
+
+    .author-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .78rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .author-name {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+
+    .author-name:hover {
+      opacity: .75;
+    }
+
+    .stats-row {
+      display: flex;
+      align-items: center;
+      gap: 1.4rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .88rem;
+      color: var(--text2);
+      font-weight: 500;
+    }
+
+    .stat-item svg {
+      color: var(--text3);
+    }
+
+    .stat-item strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .format-row {
+      display: flex;
+      gap: .6rem;
+      margin-bottom: 1.4rem;
+      flex-wrap: wrap;
+    }
+
+    .format-badge {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .32rem .85rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text2);
+      transition: border-color .2s, color .2s;
+    }
+
+    .format-badge:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .cta-row {
+      display: flex;
+      gap: .8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-start {
+      padding: .75rem 2.2rem;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--accent-glow);
+      transition: transform .2s, box-shadow .2s, opacity .2s;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+
+    .btn-add {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: all .2s;
+      font-weight: 300;
+    }
+
+    .btn-add:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--surface2);
+    }
+
+    .btn-like {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .72rem 1.3rem;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-like:hover,
+    .btn-like.liked {
+      border-color: #e879a0;
+      color: #e879a0;
+      background: rgba(232, 121, 160, .08);
+    }
+
+    .content-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 2.5rem;
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 1.8rem;
+      gap: 0;
+    }
+
+    .tab-btn {
+      padding: .65rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text3);
+      cursor: pointer;
+      position: relative;
+      transition: color .2s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform .25s;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+    }
+
+    .tab-btn.active::after {
+      transform: scaleX(1);
+    }
+
+    .tab-btn:hover {
+      color: var(--accent);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn .25s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .summary-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1rem 1.2rem;
+      border-radius: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      margin-bottom: 1.4rem;
+      flex-wrap: wrap;
+    }
+
+    .sm-item {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .88rem;
+      color: var(--text2);
+    }
+
+    .sm-item svg {
+      color: var(--accent);
+    }
+
+    .sm-item strong {
+      color: var(--text);
+    }
+
+    .status-badge {
+      padding: .18rem .7rem;
+      border-radius: 50px;
+      background: rgba(52, 211, 153, .15);
+      color: #059669;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    :root[data-theme="dark"] .status-badge {
+      background: rgba(52, 211, 153, .1);
+      color: #34d399;
+    }
+
+    .tags-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tag-pill {
+      padding: .28rem .85rem;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-size: .78rem;
+      color: var(--text2);
+      transition: border-color .2s, color .2s;
+      cursor: pointer;
+    }
+
+    .tag-pill:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .description {
+      font-size: .97rem;
+      line-height: 1.8;
+      color: var(--text2);
+      margin-bottom: .8rem;
+    }
+
+    .description.clamped {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .read-more-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--accent);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      padding: 0;
+      transition: opacity .2s;
+    }
+
+    .read-more-btn:hover {
+      opacity: .75;
+    }
+
+    .ranking-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .9rem 1.2rem;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      margin-top: 1.5rem;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+
+    .ranking-strip:hover {
+      border-color: var(--accent);
+    }
+
+    .rs-left {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+    }
+
+    .rs-rank {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--accent);
+    }
+
+    .rs-tag {
+      font-size: .82rem;
+      color: var(--text2);
+    }
+
+    .rs-tag strong {
+      color: var(--text);
+    }
+
+    .rs-arrow {
+      color: var(--text3);
+    }
+
+    .parts-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .parts-count {
+      font-size: .85rem;
+      color: var(--text3);
+    }
+
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chapter-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .9rem 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .2s;
+      border-radius: 0;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .chapter-item:first-child {
+      border-top: 1px solid var(--border);
+    }
+
+    .chapter-item:hover {
+      background: var(--surface2);
+      padding-left: .6rem;
+      padding-right: .6rem;
+      margin: 0 -.6rem;
+      border-radius: 10px;
+      border-color: transparent;
+    }
+
+    .ch-num-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--text3);
+      flex-shrink: 0;
+    }
+
+    .chapter-item.current .ch-num-badge {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .ch-item-info {
+      flex: 1;
+    }
+
+    .ch-item-title {
+      font-size: .92rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: .15rem;
+    }
+
+    .ch-item-meta {
+      font-size: .75rem;
+      color: var(--text3);
+    }
+
+    .ch-item-right {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .ch-locked {
+      font-size: .8rem;
+      color: var(--text3);
+    }
+
+    .ch-new {
+      padding: .12rem .5rem;
+      border-radius: 50px;
+      background: var(--accent);
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 700;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sidebar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.3rem;
+      transition: background .4s, border-color .4s;
+    }
+
+    .sc-title {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text3);
+      margin-bottom: 1rem;
+      padding-bottom: .5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .author-card-body {
+      display: flex;
+      gap: .9rem;
+      align-items: center;
+    }
+
+    .author-big-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #6c3de8, #a855f7, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .author-details {
+      flex: 1;
+    }
+
+    .author-display-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: .15rem;
+    }
+
+    .author-handle {
+      font-size: .8rem;
+      color: var(--accent);
+      margin-bottom: .4rem;
+    }
+
+    .author-bio {
+      font-size: .8rem;
+      color: var(--text2);
+      line-height: 1.5;
+      margin-bottom: .6rem;
+    }
+
+    .author-stats-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .as-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .as-num {
+      font-size: .92rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .as-lbl {
+      font-size: .68rem;
+      color: var(--text3);
+    }
+
+    .btn-follow {
+      width: 100%;
+      margin-top: .9rem;
+      padding: .5rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .86rem;
+      font-weight: 600;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-follow:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(108, 61, 232, .06);
+    }
+
+    .btn-follow.following {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(108, 61, 232, .08);
+    }
+
+    .related-list {
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+    }
+
+    .related-item {
+      display: flex;
+      gap: .8rem;
+      align-items: center;
+      cursor: pointer;
+      padding: .4rem;
+      border-radius: 10px;
+      transition: background .2s;
+      text-decoration: none;
+    }
+
+    .related-item:hover {
+      background: var(--surface2);
+    }
+
+    .rel-cover {
+      width: 46px;
+      height: 64px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .rel-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .rel-title {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: .1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rel-author {
+      font-size: .75rem;
+      color: var(--text3);
+      margin-bottom: .2rem;
+    }
+
+    .rel-tags {
+      display: flex;
+      gap: .3rem;
+      flex-wrap: wrap;
+    }
+
+    .rel-tag {
+      padding: .1rem .45rem;
+      border-radius: 50px;
+      background: var(--surface2);
+      color: var(--accent);
+      font-size: .62rem;
+      font-weight: 600;
+    }
+
+    footer {
+      margin-top: 4rem;
+      border-top: 1px solid var(--border);
+      padding: 3rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2rem;
+      background: var(--bg);
+      transition: background .4s, border-color .4s;
+    }
+
+    .footer-brand .nav-logo {
+      font-size: 1.4rem;
+    }
+
+    .footer-tagline {
+      font-size: .88rem;
+      color: var(--text3);
+      margin-top: .5rem;
+      line-height: 1.6;
+    }
+
+    .footer-col h4 {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: .8rem;
+      letter-spacing: .04em;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: .85rem;
+      color: var(--text3);
+      text-decoration: none;
+      margin-bottom: .5rem;
+      transition: color .2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--accent);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .8rem;
+      color: var(--text3);
+      background: var(--bg);
+      transition: background .4s;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .5s, transform .5s;
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (max-width: 900px) {
+      .content-wrap {
+        grid-template-columns: 1fr;
+        padding: 1.5rem 1.5rem;
+      }
+
+      .book-hero {
+        padding: 2rem 1.5rem;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .stats-row {
+        justify-content: center;
+      }
+
+      .format-row {
+        justify-content: center;
+      }
+
+      .cta-row {
+        justify-content: center;
+      }
+
+      .author-row {
+        justify-content: center;
+      }
+
+      footer {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      nav {
+        padding: 0 1.5rem;
+        gap: .8rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body dir="ltr" spellcheck="false" style="direction: ltr; min-height: 901px;">
+
+  <nav>
+    <a class="nav-logo" href="bookly.html">Book<span>ly</span></a>
+    <div class="nav-links">
+      <a href="#">Browse</a>
+      <a href="#">Community</a>
+      <a href="#">Contests</a>
+    </div>
+    <div class="nav-search">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input type="text" placeholder="Search stories, authors…">
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <svg id="theme-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    </button>
+      <button class="btn-ghost">Log in</button>
+      <button class="btn-primary">Sign up free</button>
+    </div>
+  </nav>
+
+  <div class="page-body">
+    <div class="book-hero">
+      <div class="cover-wrap">
+        <div class="book-cover-img">🌙</div>
+      </div>
+
+      <div class="hero-info">
+        <div class="original-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+            </path>
+          </svg>
+          Bookly Original
+        </div>
+
+        <h1 class="book-title">Goofy Ahh Nigga</h1>
+
+        <div class="author-row">
+          <div class="author-avatar">N</div>
+          <a class="author-name" href="#">noel_writes</a>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <strong>4.1M</strong> reads
+          </div>
+          <div class="stat-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+              </path>
+            </svg>
+            <strong>98K</strong> likes
+          </div>
+          <div class="stat-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <strong>24K</strong> comments
+          </div>
+          <div class="stat-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            <strong>9</strong> parts
+          </div>
+        </div>
+
+        <div class="format-row">
+          <span class="format-badge">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          Digital
+        </span>
+          <span class="format-badge">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Print available
+        </span>
+          <span class="format-badge">🎧 Audio coming soon</span>
+        </div>
+
+        <a href="Read.html" class="button-click">
+          <div class="cta-row">
+            <button class="btn-start" onclick="this.textContent='Opening…'">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          Start reading</button>
+            <button class="btn-like" id="like-btn" onclick="toggleLike()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          <span id="like-count">98K</span></button>
+            <button class="btn-add" title="Add to library">+</button>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="content-wrap">
+      <div>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('summary', this)">Summary</button>
+          <button class="tab-btn" onclick="switchTab('parts', this)">Parts (9)</button>
+        </div>
+
+        <div class="tab-panel active" id="tab-summary">
+
+          <div class="summary-meta">
+            <div class="sm-item">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span class="status-badge">Complete</span>
+            </div>
+            <div class="sm-item">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Updated <strong>May 14, 2026</strong></span>
+            </div>
+            <div class="sm-item">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>~<strong>6h 20m</strong> read time</span>
+            </div>
+          </div>
+
+          <div class="tags-wrap">
+            <span class="tag-pill">competition</span>
+            <span class="tag-pill">fantasy</span>
+            <span class="tag-pill">music</span>
+            <span class="tag-pill">slowburn</span>
+            <span class="tag-pill">originalfiction</span>
+            <span class="tag-pill">booklyoriginal</span>
+          </div>
+
+          <p class="description clamped" id="desc-text">
+            Noel is a focused and steadily improving creator who rises through consistency and discipline. His rival,
+            Reene, is
+            talented but unpredictable—constantly shifting between confidence, doubt, and disinterest in competition.
+            Sometimes she
+            challenges Noel directly, other times she dismisses the rivalry entirely, making her intentions unclear to
+            everyone
+            around her.
+
+            As their rivalry grows, public debate surrounds who is better, but Noel continues to progress methodically
+            while Reene
+            struggles with inconsistency and unfinished ideas. Over time, it becomes clear that the real difference
+            between them is
+            not skill, but direction: Noel has a clear path and stays committed to it, while Reene is caught in constant
+            internal
+            uncertainty.
+
+            In the end, Noel’s steady focus allows him to keep advancing, while Reene remains a wildcard—full of
+            potential, but
+            unable to fully define her role in the rivalry.
+          </p>
+          <button class="read-more-btn" id="read-more-btn" onclick="toggleDesc()">Read more</button>
+
+          <div class="ranking-strip reveal">
+            <div class="rs-left">
+              <div class="rs-rank">#12</div>
+              <div class="rs-tag">in <strong>Fantasy Romance</strong> · Bookly Charts</div>
+            </div>
+            <svg class="rs-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+
+        </div>
+
+        <div class="tab-panel" id="tab-parts">
+          <div class="parts-header">
+            <span class="parts-count">9 parts · Last updated May 14, 2026</span>
+          </div>
+          <div class="chapter-list">
+
+            <a class="chapter-item" href="Read.html">
+              <div class="ch-num-badge">1</div>
+              <div class="ch-item-info">
+                <div class="ch-item-title">The Goof Called Reene</div>
+                <div class="ch-item-meta">Mar 2, 2026 · 322 words</div>
+              </div>
+              <div class="ch-item-right">
+                <span style="font-size:.78rem;color:var(--text3)">👁 580K</span>
+              </div>
+            </a>
+
+            <a class="chapter-item" href="bookly-reader.html">
+              <div class="ch-num-badge">2</div>
+              <div class="ch-item-info">
+                <div class="ch-item-title">The Garden Of Mom</div>
+                <div class="ch-item-meta">Mar 9, 2026 · 4,100 words</div>
+              </div>
+              <div class="ch-item-right">
+                <span style="font-size:.78rem;color:var(--text3)">👁 512K</span>
+              </div>
+            </a>
+
+            <a class="chapter-item current" href="bookly-reader.html">
+              <div class="ch-num-badge">3</div>
+              <div class="ch-item-info">
+                <div class="ch-item-title">The First Negro</div>
+                <div class="ch-item-meta">Mar 16, 2026 · 3,800 words</div>
+              </div>
+              <div class="ch-item-right">
+                <span class="ch-new">NEW</span>
+                <span style="font-size:.78rem;color:var(--text3)">👁 412K</span>
+              </div>
+            </a>
+
+            <a class="chapter-item" href="#">
+              <div class="ch-num-badge">4</div>
+              <div class="ch-item-info">
+                <div class="ch-item-title">What the Moon Hides</div>
+                <div class="ch-item-meta">Mar 23, 2026 · 4,400 words</div>
+              </div>
+              <div class="ch-item-right">
+                <span style="font-size:.78rem;color:var(--text3)">👁 390K</span>
+              </div>
+            </a>
+
+            <a class="chapter-item" href="#">
+              <div class="ch-num-badge">5</div>
+              <div class="ch-item-info">
+                <div class="ch-item-title">Ink and Starlight</div>
+                <div class="ch-item-meta">Apr 1, 2026 · 3,600 words</div>
+              </div>
+              <div class="ch-item-right">
+                <span style="font-size:.78rem;color:var(--text3)">👁 367K</span>
+              </div>
+            </a>
+
+            <a class="chapter-item" href="#">
+              <div class="ch-num-badge">6</div>
+              <div class="ch-item-info">
+                <div class="ch-item-title">The Warden's Price</div>
+                <div class="ch-item-meta">Apr 10, 2026 · 5,000 words</div>
+              </div>
+              <div class="ch-item-right">
+                <span style="font-size:.78rem;color:var(--text3)">👁 344K</span>
+              </div>
+            </a>
+
+            <a class="chapter-item" href="#">
+              <div class="ch-num-badge">7</div>
+              <div class="ch-item-info">
+                <div class="ch-item-title">Through the Veil</div>
+                <div class="ch-item-meta">Apr 22, 2026 · 4,200 words</div>
+              </div>
+              <div class="ch-item-right">
+                <span style="font-size:.78rem;color:var(--text3)">👁 298K</span>
+              </div>
+            </a>
+
+            <a class="chapter-item" href="#">
+              <div class="ch-num-badge">8</div>
+              <div class="ch-item-info">
+                <div class="ch-item-title">A Debt in Petals</div>
+                <div class="ch-item-meta">May 5, 2026 · 4,800 words</div>
+              </div>
+              <div class="ch-item-right">
+                <span class="ch-locked">🔒</span>
+                <span style="font-size:.78rem;color:var(--text3)">👁 201K</span>
+              </div>
+            </a>
+
+            <a class="chapter-item" href="#">
+              <div class="ch-num-badge">9</div>
+              <div class="ch-item-info">
+                <div class="ch-item-title">The Second Bloom</div>
+                <div class="ch-item-meta">May 14, 2026 · 5,200 words · Final chapter</div>
+              </div>
+              <div class="ch-item-right">
+                <span class="ch-locked">🔒</span>
+                <span style="font-size:.78rem;color:var(--text3)">👁 180K</span>
+              </div>
+            </a>
+
+          </div>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+
+        <div class="sidebar-card reveal">
+          <div class="sc-title">About the author</div>
+          <div class="author-card-body">
+            <div class="author-big-avatar">N</div>
+            <div class="author-details">
+              <div class="author-display-name">Noel Dula</div>
+              <div class="author-handle">@noel_writes</div>
+            </div>
+          </div>
+          <p class="author-bio" style="margin-top:.8rem">I'm not paid enough for this.. Matter of fact, I'm not paid at
+            all. Writing since 2021. 🌙</p>
+          <div class="author-stats-row" style="margin-top:.7rem">
+            <div class="as-stat"><span class="as-num">12</span><span class="as-lbl">Stories</span></div>
+            <div class="as-stat"><span class="as-num">148K</span><span class="as-lbl">Followers</span></div>
+            <div class="as-stat"><span class="as-num">18.4M</span><span class="as-lbl">Total reads</span></div>
+          </div>
+          <button class="btn-follow" id="follow-btn" onclick="toggleFollow()">+ Follow</button>
+        </div>
+
+        <div class="sidebar-card reveal">
+          <div class="sc-title">You might also like</div>
+          <div class="related-list">
+
+            <a class="related-item" href="#">
+              <div class="rel-cover" style="background:linear-gradient(135deg,#6c3de8,#ec4899)">🌌</div>
+              <div class="rel-info">
+                <div class="rel-title">Between Two Moons</div>
+                <div class="rel-author">by luminaria</div>
+                <div class="rel-tags"><span class="rel-tag">Romance</span><span class="rel-tag">Fantasy</span></div>
+              </div>
+            </a>
+
+            <a class="related-item" href="#">
+              <div class="rel-cover" style="background:linear-gradient(135deg,#f472b6,#7c3aed)">💌</div>
+              <div class="rel-info">
+                <div class="rel-title">Letters to Nobody</div>
+                <div class="rel-author">by epistolary</div>
+                <div class="rel-tags"><span class="rel-tag">Romance</span><span class="rel-tag">Drama</span></div>
+              </div>
+            </a>
+
+            <a class="related-item" href="#">
+              <div class="rel-cover" style="background:linear-gradient(135deg,#0ea5e9,#6c3de8)">🏰</div>
+              <div class="rel-info">
+                <div class="rel-title">The Veiled Court</div>
+                <div class="rel-author">by crownedpen</div>
+                <div class="rel-tags"><span class="rel-tag">Historical</span><span class="rel-tag">Romance</span></div>
+              </div>
+            </a>
+
+            <a class="related-item" href="#">
+              <div class="rel-cover" style="background:linear-gradient(135deg,#7c3aed,#d97706)">📜</div>
+              <div class="rel-info">
+                <div class="rel-title">Oracle's Debt</div>
+                <div class="rel-author">by mythweaver</div>
+                <div class="rel-tags"><span class="rel-tag">Fantasy</span><span class="rel-tag">Mystery</span></div>
+              </div>
+            </a>
+
+            <a class="related-item" href="#">
+              <div class="rel-cover" style="background:linear-gradient(135deg,#059669,#6c3de8)">🌿</div>
+              <div class="rel-info">
+                <div class="rel-title">A Forest's Memory</div>
+                <div class="rel-author">by naturequill</div>
+                <div class="rel-tags"><span class="rel-tag">Historical</span></div>
+              </div>
+            </a>
+
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <footer>
+      <div class="footer-brand">
+        <a class="nav-logo" href="bookly.html">Book<span>ly</span></a>
+        <p class="footer-tagline">Where every story finds<br>its reader. Since 2024.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Discover</h4>
+        <a href="#">Browse stories</a>
+        <a href="#">New releases</a>
+        <a href="#">Editor's picks</a>
+        <a href="#">Leaderboards</a>
+        <a href="#">Contests</a>
+      </div>
+      <div class="footer-col">
+        <h4>Write</h4>
+        <a href="#">Start a story</a>
+        <a href="#">Writer's hub</a>
+        <a href="#">Writing tips</a>
+        <a href="#">Bookly Pro</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About us</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+    </footer>
+    <div class="footer-bottom">
+      <span>© 2026 Bookly. All rights reserved.</span>
+      <span>Made with 💜 for readers everywhere</span>
+    </div>
+
+  </div>
+
+
+
+
+</body>
+
+</html>
