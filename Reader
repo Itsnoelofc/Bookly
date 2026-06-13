@@ -10,9 +10,6 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;family=DM+Sans:wght@300;400;500;600&amp;family=Crimson+Pro:ital,wght@0,400;0,600;1,400&amp;display=swap"
     rel="stylesheet">
   <style>
-    /* ══════════════════════════════════════
-   THEME TOKENS
-══════════════════════════════════════ */
     :root[data-theme="light"] {
       --bg: #faf8f5;
       --page: #fffef9;
@@ -67,7 +64,6 @@
       --reading-text: #3d2b1f;
     }
 
-    /* Font size variants */
     :root[data-size="sm"] {
       --read-size: 0.92rem;
       --read-lh: 1.85;
@@ -88,7 +84,6 @@
       --read-lh: 2.0;
     }
 
-    /* Font family variants */
     :root[data-font="serif"] {
       --read-font: 'Lora', Georgia, serif;
     }
@@ -105,7 +100,6 @@
       --read-font: 'DM Sans', sans-serif;
     }
 
-    /* Width variants */
     :root[data-width="narrow"] {
       --content-max: 580px;
     }
@@ -138,7 +132,6 @@
       transition: background .35s, color .35s;
     }
 
-    /* ── READING PROGRESS BAR ── */
     #progress-bar {
       position: fixed;
       top: 0;
@@ -151,7 +144,6 @@
       border-radius: 0 2px 2px 0;
     }
 
-    /* ── TOP NAV ── */
     .top-nav {
       position: fixed;
       top: 0;
@@ -274,7 +266,6 @@
       opacity: 1;
     }
 
-    /* ── SETTINGS PANEL ── */
     .settings-panel {
       position: fixed;
       top: 64px;
@@ -327,7 +318,6 @@
       display: block;
     }
 
-    /* Theme chips */
     .chip-row {
       display: flex;
       gap: .4rem;
@@ -358,7 +348,6 @@
       color: #fff;
     }
 
-    /* Slider */
     .sp-slider {
       width: 100%;
       accent-color: var(--accent);
@@ -367,7 +356,6 @@
       border-radius: 2px;
     }
 
-    /* Font preview chips */
     .font-chip {
       flex: 1;
       padding: .4rem .6rem;
@@ -409,7 +397,6 @@
       font-family: 'DM Sans', sans-serif;
     }
 
-    /* ── MAIN LAYOUT ── */
     .reader-wrap {
       display: flex;
       max-width: 1280px;
@@ -418,7 +405,6 @@
       gap: 2rem;
     }
 
-    /* ── LEFT SIDEBAR – Chapter list ── */
     .sidebar-left {
       width: 230px;
       flex-shrink: 0;
@@ -551,7 +537,6 @@
       opacity: .6;
     }
 
-    /* ── READING CONTENT ── */
     .reading-area {
       flex: 1;
       min-width: 0;
@@ -640,7 +625,6 @@
       color: var(--text3);
     }
 
-    /* ── PROSE ── */
     .prose {
       font-family: var(--read-font, 'Lora', serif);
       font-size: var(--read-size, 1.08rem);
@@ -684,13 +668,11 @@
       color: var(--text);
     }
 
-    /* Highlighted text (from selection) */
     ::selection {
       background: var(--accent-soft);
       color: var(--accent);
     }
 
-    /* ── CHAPTER NAV ── */
     .chapter-nav {
       display: flex;
       align-items: center;
@@ -748,7 +730,6 @@
       font-size: .88rem;
     }
 
-    /* ── RIGHT SIDEBAR – Comments ── */
     .sidebar-right {
       width: 260px;
       flex-shrink: 0;
@@ -787,7 +768,6 @@
       margin-bottom: .8rem;
     }
 
-    /* Reactions */
     .reactions {
       display: flex;
       flex-direction: column;
@@ -839,7 +819,6 @@
       color: #e879a0;
     }
 
-    /* Comments */
     .comment-list {
       display: flex;
       flex-direction: column;
@@ -957,7 +936,6 @@
       transform: scale(1.05);
     }
 
-    /* ── FOOTER FLOATING BAR (mobile) ── */
     .float-bar {
       display: none;
       position: fixed;
@@ -974,7 +952,6 @@
       z-index: 90;
     }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 1100px) {
       .sidebar-right {
         display: none;
@@ -999,7 +976,6 @@
       }
     }
 
-    /* ── SCROLL-HIDE NAV ── */
     .scroll-hint {
       position: fixed;
       bottom: 5rem;
@@ -1027,10 +1003,8 @@
 
 <body dir="ltr" spellcheck="false" style="direction: ltr; min-height: 901px;">
 
-  <!-- PROGRESS -->
   <div id="progress-bar"><br></div>
 
-  <!-- TOP NAV -->
   <nav class="top-nav" id="top-nav">
     <a class="nav-logo" href="bookly.html">Book<span>ly</span></a>
     <div class="nav-breadcrumb">
@@ -1056,7 +1030,6 @@
     </div>
   </nav>
 
-  <!-- SETTINGS PANEL -->
   <div class="settings-panel" id="settings-panel">
     <div class="sp-title">Reading Settings</div>
 
@@ -1099,10 +1072,8 @@
     </div>
   </div>
 
-  <!-- READER LAYOUT -->
   <div class="reader-wrap">
 
-    <!-- LEFT SIDEBAR -->
     <aside class="sidebar-left">
       <div class="sidebar-section">
         <div class="sidebar-label">About this book</div>
@@ -1121,7 +1092,7 @@
         <div class="chapter-list">
           <a class="ch-item active" href="#"><span class="ch-num">1</span>The Goof Called Reene</a>
           <a class="ch-item" href="#"><span class="ch-num">2</span>The Garden of Mom</a>
-                    <a class="ch-item" href="#"><span class="ch-num">3</span>The First Negro</a>
+          <a class="ch-item" href="#"><span class="ch-num">3</span>The First Negro</a>
           <a class="ch-item" href="#"><span class="ch-num">4</span>What the Moon Hides</a>
           <a class="ch-item" href="#"><span class="ch-num">5</span>Ink and Starlight</a>
           <a class="ch-item" href="#"><span class="ch-num">6</span>The Warden's Price</a>
@@ -1132,7 +1103,6 @@
       </div>
     </aside>
 
-    <!-- READING AREA -->
     <main class="reading-area" id="reading-area">
 
       <header class="chapter-header">
@@ -1211,7 +1181,6 @@
 
       </article>
 
-      <!-- CHAPTER NAVIGATION -->
       <nav class="chapter-nav">
         <a class="ch-nav-btn prev" href="#">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
@@ -1263,7 +1232,6 @@
         </div>
       </div>
 
-      <!-- Comments -->
       <div class="action-card" style="flex:1">
         <div class="ac-title">Comments <span style="color:var(--accent);font-weight:700">412</span></div>
         <div class="comment-list" id="comment-list">
@@ -1312,7 +1280,6 @@
     </aside>
   </div>
 
-  <!-- SCROLL HINT -->
   <div class="scroll-hint" id="scroll-hint">↓ Keep reading</div>
 
 
