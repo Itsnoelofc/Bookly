@@ -562,9 +562,11 @@
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 1.5rem;
     }
+
     .grid-card-link {
       text-decoration: none;
     }
+
     .grid-card {
       border-radius: 14px;
       background: var(--surface);
@@ -953,24 +955,25 @@
       <a href="Charts.html" class="see-all">See all →</a>
     </div>
     <div class="book-grid reveal in">
-      <a href="View.html" class="grid-card-link"><div class="grid-card">
-        <div class="grid-cover" style="background:linear-gradient(135deg,#6c3de8,#a855f7)">🌙</div>
-        <div class="grid-info">
-          <div class="grid-title">Goofy Ahh Niggas</div>
-          <div class="grid-author">by noel_writes</div>
-          <div class="grid-tags"><span class="tag">Action</span><span class="tag">Sci-Fi</span></div>
+      <a href="View.html" class="grid-card-link">
+        <div class="grid-card">
+          <div class="grid-cover" style="background:linear-gradient(135deg,#6c3de8,#a855f7)">🌙</div>
+          <div class="grid-info">
+            <div class="grid-title">Goofy Ahh Niggas</div>
+            <div class="grid-author">by noel_writes</div>
+            <div class="grid-tags"><span class="tag">Action</span><span class="tag">Sci-Fi</span></div>
+          </div>
         </div>
-      </div>
       </a>
       <a href="#" class="grid-card-link">
-      <div class="grid-card">
-        <div class="grid-cover" style="background:linear-gradient(135deg,#7c3aed,#ec4899)">🗡️</div>
-        <div class="grid-info">
-          <div class="grid-title">Miguel's Demise</div>
-          <div class="grid-author">by DontMindTheBooksName</div>
-          <div class="grid-tags"><span class="tag">Fantasy</span><span class="tag">Action</span></div>
+        <div class="grid-card">
+          <div class="grid-cover" style="background:linear-gradient(135deg,#7c3aed,#ec4899)">🗡️</div>
+          <div class="grid-info">
+            <div class="grid-title">Miguel's Demise</div>
+            <div class="grid-author">by DontMindTheBooksName</div>
+            <div class="grid-tags"><span class="tag">Fantasy</span><span class="tag">Action</span></div>
+          </div>
         </div>
-      </div>
       </a>
       <div class="grid-card">
         <div class="grid-cover" style="background:linear-gradient(135deg,#4f46e5,#06b6d4)">🚀</div>
@@ -1137,7 +1140,6 @@
   </div>
 
   <script>
-    // Theme toggle
   function toggleTheme() {
     const html = document.documentElement;
     const isDark = html.getAttribute('data-theme') === 'dark';
@@ -1150,7 +1152,6 @@
     }
   }
 
-  // Genre pill interaction
   document.querySelectorAll('.pill').forEach(p => {
     p.addEventListener('click', () => {
       document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
@@ -1158,7 +1159,6 @@
     });
   });
 
-  // Scroll reveal
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
   }, { threshold: 0.12 });
