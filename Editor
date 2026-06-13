@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookly – Write Your Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+
+/* ══ TOKENS ══ */
+:root[data-theme="light"] {
+  --bg:           #f7f4ff;
+  --bg2:          #ede8ff;
+  --surface:      #ffffff;
+  --surface2:     #f0ebff;
+  --border:       #d8cdff;
+  --text:         #1a0f3a;
+  --text2:        #5a4a8a;
+  --text3:        #8a78b8;
+  --accent:       #6c3de8;
+  --accent-soft:  #9b6ff5;
+  --accent-glow:  rgba(108,61,232,0.18);
+  --card-shadow:  0 4px 24px rgba(108,61,232,0.10);
+  --nav-bg:       rgba(247,244,255,0.92);
+  --editor-bg:    #ffffff;
+  --editor-border:#e8e0ff;
+  --toolbar-bg:   #f7f4ff;
+}
+:root[data-theme="dark"] {
+  --bg:           #0e0a1f;
+  --bg2:          #150e2e;
+  --surface:      #1d1538;
+  --surface2:     #261d47;
+  --border:       #352a5a;
+  --text:         #f0ecff;
+  --text2:        #b8a8e8;
+  --text3:        #7860b8;
+  --accent:       #9b6ff5;
+  --accent-soft:  #c39dff;
+  --accent-glow:  rgba(155,111,245,0.25);
+  --card-shadow:  0 4px 32px rgba(155,111,245,0.15);
+  --nav-bg:       rgba(14,10,31,0.92);
+  --editor-bg:    #1a1530;
+  --editor-border:#2e2355;
+  --toolbar-bg:   #150e2e;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .4s, color .4s;
+  overflow-x: hidden;
+}
+
+/* ══ NAV ══ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; gap: 1.5rem;
+  padding: 0 2rem; height: 60px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: background .4s, border-color .4s;
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 900;
+  color: var(--accent); letter-spacing: -.5px; text-decoration: none; flex-shrink: 0;
+}
+.nav-logo span { color: var(--text); }
+
+.nav-story-title {
+  flex: 1; max-width: 340px;
+  font-size: .92rem; font-weight: 600; color: var(--text2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nav-story-title em { color: var(--text3); font-style: normal; font-size: .8rem; margin-left: .4rem; }
+
+.save-indicator {
+  display: flex; align-items: center; gap: .35rem;
+  font-size: .78rem; color: var(--text3); flex-shrink: 0;
+}
+.save-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text3); transition: background .3s;
+}
+.save-dot.saved { background: #34d399; }
+.save-dot.saving { background: #fbbf24; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.nav-right { display: flex; align-items: center; gap: .6rem; margin-left: auto; }
+.nav-btn-sm {
+  padding: .38rem 1rem; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 600;
+  border: 1.5px solid var(--border); background: transparent; color: var(--text2);
+  cursor: pointer; transition: all .2s;
+}
+.nav-btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+.btn-publish {
+  padding: .42rem 1.3rem; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 700;
+  border: none; background: var(--accent); color: #fff;
+  cursor: pointer; transition: opacity .2s, transform .15s;
+  box-shadow: 0 3px 12px var(--accent-glow);
+  display: flex; align-items: center; gap: .4rem;
+}
+.btn-publish:hover { opacity: .88; transform: translateY(-1px); }
+.theme-toggle {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text2); transition: all .2s;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ══ LAYOUT ══ */
+.writer-wrap {
+  display: flex;
+  height: calc(100vh - 60px);
+  margin-top: 60px;
+}
+
+/* ══ LEFT PANEL – Chapter list ══ */
+.left-panel {
+  width: 260px; flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transition: background .4s, border-color .4s, width .3s;
+  overflow: hidden;
+}
+.left-panel.collapsed { width: 0; border-right: none; }
+
+.lp-header {
+  padding: 1rem 1.2rem .8rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.lp-title { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); }
+.lp-add {
+  width: 26px; height: 26px; border-radius: 6px;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text3); font-size: 1rem; line-height: 1;
+  transition: all .2s;
+}
+.lp-add:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+.chapter-list { flex: 1; overflow-y: auto; padding: .5rem 0; }
+.chapter-list::-webkit-scrollbar { width: 3px; }
+.chapter-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.ch-item {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .6rem 1.2rem; cursor: pointer;
+  transition: background .15s;
+  position: relative;
+}
+.ch-item:hover { background: var(--surface2); }
+.ch-item.active { background: var(--accent-glow); }
+.ch-item.active .ch-name { color: var(--accent); font-weight: 600; }
+.ch-drag { color: var(--text3); opacity: .4; flex-shrink: 0; cursor: grab; font-size: .7rem; }
+.ch-num-b {
+  width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .68rem; font-weight: 700; color: var(--text3);
+  transition: background .2s;
+}
+.ch-item.active .ch-num-b { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ch-name { flex: 1; font-size: .84rem; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ch-words { font-size: .68rem; color: var(--text3); flex-shrink: 0; }
+.ch-dot { width: 6px; height: 6px; border-radius: 50%; background: #fbbf24; flex-shrink: 0; }
+.ch-dot.published { background: #34d399; }
+
+.lp-story-info {
+  padding: .9rem 1.2rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.lp-cover-mini {
+  width: 100%; height: 100px; border-radius: 10px;
+  background: linear-gradient(145deg,#6c3de8,#a855f7,#ec4899);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; margin-bottom: .7rem; cursor: pointer;
+  transition: opacity .2s; position: relative; overflow: hidden;
+}
+.lp-cover-mini:hover::after {
+  content: '✏️ Edit cover';
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.55);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: .78rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
+}
+.lp-story-name { font-size: .85rem; font-weight: 700; color: var(--text); margin-bottom: .15rem; }
+.lp-story-meta { font-size: .72rem; color: var(--text3); }
+
+/* ══ CENTRE – Editor ══ */
+.editor-area {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; background: var(--bg);
+  transition: background .4s;
+}
+
+/* Toolbar */
+.toolbar {
+  background: var(--toolbar-bg);
+  border-bottom: 1px solid var(--border);
+  padding: .45rem 1.5rem;
+  display: flex; align-items: center; gap: .25rem;
+  flex-wrap: wrap; flex-shrink: 0;
+  transition: background .4s, border-color .4s;
+}
+.toolbar-sep { width: 1px; height: 20px; background: var(--border); margin: 0 .3rem; }
+.tb-btn {
+  width: 32px; height: 32px; border-radius: 7px;
+  border: none; background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text2);
+  font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 600;
+  transition: background .15s, color .15s;
+}
+.tb-btn:hover { background: var(--surface2); color: var(--accent); }
+.tb-btn.active { background: var(--accent-glow); color: var(--accent); }
+.tb-btn.bold { font-weight: 900; font-size: .9rem; }
+.tb-btn.italic { font-style: italic; font-family: 'Lora', serif; }
+.tb-select {
+  padding: .28rem .6rem; border-radius: 7px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: .8rem;
+  cursor: pointer; outline: none; transition: border-color .2s;
+}
+.tb-select:focus { border-color: var(--accent); }
+.toolbar-right { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
+.word-count { font-size: .75rem; color: var(--text3); }
+
+/* Chapter title bar */
+.chapter-title-bar {
+  padding: 1.2rem 3rem .6rem;
+  background: var(--editor-bg);
+  border-bottom: 1px solid var(--editor-border);
+  display: flex; align-items: center; gap: .8rem;
+  flex-shrink: 0;
+  transition: background .4s, border-color .4s;
+}
+.ch-label { font-size: .75rem; color: var(--text3); font-weight: 600; flex-shrink: 0; }
+.ch-title-input {
+  flex: 1;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; font-weight: 700;
+  border: none; background: transparent; color: var(--text);
+  outline: none;
+}
+.ch-title-input::placeholder { color: var(--text3); }
+
+/* Editor scroll container */
+.editor-scroll {
+  flex: 1; overflow-y: auto; background: var(--bg);
+  transition: background .4s;
+}
+.editor-scroll::-webkit-scrollbar { width: 5px; }
+.editor-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* The actual editable area */
+.editor-page {
+  max-width: 740px; margin: 2.5rem auto 6rem;
+  background: var(--editor-bg);
+  border: 1px solid var(--editor-border);
+  border-radius: 16px;
+  padding: 3rem 4rem;
+  box-shadow: var(--card-shadow);
+  min-height: 500px;
+  transition: background .4s, border-color .4s, box-shadow .4s;
+}
+.editor-content {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.05rem; line-height: 2;
+  color: var(--text);
+  min-height: 420px; outline: none;
+  caret-color: var(--accent);
+}
+.editor-content:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text3); pointer-events: none;
+  font-style: italic;
+}
+.editor-content p { margin-bottom: .8em; }
+.editor-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 800;
+  margin: 1.2em 0 .5em; color: var(--text);
+}
+.editor-content h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem; font-weight: 700;
+  margin: 1em 0 .4em; color: var(--text);
+}
+.editor-content blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 1em 0; padding: .5em 1.2em;
+  color: var(--text2); font-style: italic;
+  background: var(--surface2); border-radius: 0 8px 8px 0;
+}
+
+/* Floating action bar (context menu substitute) */
+.float-bar {
+  position: fixed; z-index: 300;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: .3rem .4rem;
+  display: none; gap: .2rem;
+  box-shadow: var(--card-shadow);
+  animation: floatIn .15s ease;
+}
+.float-bar.show { display: flex; }
+@keyframes floatIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+.fb-btn {
+  width: 30px; height: 30px; border-radius: 6px; border: none;
+  background: transparent; color: var(--text2); cursor: pointer;
+  font-size: .8rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+}
+.fb-btn:hover { background: var(--surface2); color: var(--accent); }
+
+/* ══ RIGHT PANEL – Story settings ══ */
+.right-panel {
+  width: 300px; flex-shrink: 0;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+  transition: background .4s, border-color .4s, width .3s;
+}
+.right-panel::-webkit-scrollbar { width: 3px; }
+.right-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.right-panel.collapsed { width: 0; border-left: none; }
+
+.rp-section {
+  padding: 1.1rem 1.3rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.rp-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); margin-bottom: .9rem; }
+
+/* Cover uploader */
+.cover-upload {
+  width: 100%; aspect-ratio: 2/3;
+  border-radius: 12px; border: 2px dashed var(--border);
+  background: var(--surface2);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .5rem; cursor: pointer; transition: all .2s;
+  position: relative; overflow: hidden;
+}
+.cover-upload:hover { border-color: var(--accent); background: var(--accent-glow); }
+.cover-preview {
+  position: absolute; inset: 0;
+  background: linear-gradient(145deg,#6c3de8,#a855f7,#ec4899);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem;
+}
+.cover-preview-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s;
+  font-size: .82rem; color: #fff; font-weight: 600; gap: .3rem;
+}
+.cover-upload:hover .cover-preview-overlay { opacity: 1; }
+.cu-icon { font-size: 1.8rem; color: var(--text3); }
+.cu-label { font-size: .82rem; font-weight: 600; color: var(--text2); }
+.cu-hint { font-size: .72rem; color: var(--text3); }
+
+/* Form fields */
+.rp-field { margin-bottom: .9rem; }
+.rp-label { font-size: .78rem; font-weight: 600; color: var(--text2); margin-bottom: .35rem; display: block; }
+.rp-input {
+  width: 100%; padding: .6rem .8rem;
+  border-radius: 9px; border: 1.5px solid var(--border);
+  background: var(--surface2); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: .85rem;
+  outline: none; transition: border-color .2s;
+}
+.rp-input:focus { border-color: var(--accent); }
+.rp-input::placeholder { color: var(--text3); }
+textarea.rp-input { resize: vertical; min-height: 80px; line-height: 1.6; }
+.rp-select {
+  width: 100%; padding: .6rem .8rem;
+  border-radius: 9px; border: 1.5px solid var(--border);
+  background: var(--surface2); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: .85rem;
+  outline: none; cursor: pointer; transition: border-color .2s;
+}
+.rp-select:focus { border-color: var(--accent); }
+
+/* Tag input */
+.tag-input-wrap {
+  display: flex; flex-wrap: wrap; gap: .35rem;
+  padding: .5rem .7rem; border-radius: 9px;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  min-height: 40px; cursor: text; transition: border-color .2s;
+}
+.tag-input-wrap:focus-within { border-color: var(--accent); }
+.tag-chip {
+  display: flex; align-items: center; gap: .25rem;
+  padding: .18rem .6rem; border-radius: 50px;
+  background: var(--accent-glow); color: var(--accent);
+  font-size: .74rem; font-weight: 600; white-space: nowrap;
+}
+.tag-remove { cursor: pointer; opacity: .6; transition: opacity .15s; font-size: .8rem; line-height: 1; }
+.tag-remove:hover { opacity: 1; }
+.tag-text-input {
+  border: none; background: transparent; outline: none;
+  font-family: 'DM Sans', sans-serif; font-size: .82rem; color: var(--text);
+  min-width: 80px; flex: 1;
+}
+.tag-text-input::placeholder { color: var(--text3); }
+
+/* Toggle switch */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: .7rem;
+}
+.toggle-lbl { font-size: .83rem; color: var(--text2); }
+.toggle-switch {
+  width: 36px; height: 20px; border-radius: 50px;
+  background: var(--border); cursor: pointer; position: relative;
+  transition: background .25s;
+}
+.toggle-switch.on { background: var(--accent); }
+.toggle-switch::after {
+  content: ''; position: absolute;
+  width: 14px; height: 14px; border-radius: 50%; background: #fff;
+  top: 3px; left: 3px; transition: left .25s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.toggle-switch.on::after { left: 19px; }
+
+/* Publish btn in panel */
+.btn-publish-full {
+  width: 100%; padding: .75rem;
+  border-radius: 11px; border: none;
+  background: var(--accent); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 700;
+  cursor: pointer; box-shadow: 0 4px 16px var(--accent-glow);
+  transition: opacity .2s, transform .2s;
+  display: flex; align-items: center; justify-content: center; gap: .5rem;
+}
+.btn-publish-full:hover { opacity: .88; transform: translateY(-1px); }
+.btn-save-draft {
+  width: 100%; padding: .65rem; margin-bottom: .6rem;
+  border-radius: 11px;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  font-family: 'DM Sans', sans-serif; font-size: .88rem; font-weight: 600;
+  color: var(--text2); cursor: pointer; transition: all .2s;
+}
+.btn-save-draft:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ══ PUBLISH MODAL ══ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,.55); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 22px; padding: 2.2rem;
+  max-width: 480px; width: 90%;
+  box-shadow: 0 24px 80px rgba(0,0,0,.3);
+  transform: scale(.95) translateY(20px);
+  transition: transform .3s, opacity .3s;
+}
+.modal-overlay.open .modal { transform: none; }
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; font-weight: 900; color: var(--text);
+  margin-bottom: .4rem;
+}
+.modal-sub { font-size: .88rem; color: var(--text3); margin-bottom: 1.5rem; }
+.modal-checklist { display: flex; flex-direction: column; gap: .7rem; margin-bottom: 1.5rem; }
+.mc-item {
+  display: flex; align-items: center; gap: .7rem;
+  padding: .7rem .9rem; border-radius: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+}
+.mc-icon { font-size: 1.1rem; }
+.mc-text { flex: 1; font-size: .85rem; color: var(--text2); }
+.mc-check { font-size: .9rem; }
+.mc-item.ok { border-color: rgba(52,211,153,.3); }
+.mc-item.ok .mc-check { color: #34d399; }
+.mc-item.warn { border-color: rgba(251,191,36,.3); }
+.mc-item.warn .mc-check { color: #fbbf24; }
+.modal-actions { display: flex; gap: .7rem; }
+.modal-cancel {
+  flex: 1; padding: .72rem; border-radius: 10px;
+  border: 1.5px solid var(--border); background: transparent;
+  font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 600;
+  color: var(--text2); cursor: pointer; transition: all .2s;
+}
+.modal-cancel:hover { border-color: var(--accent); color: var(--accent); }
+.modal-confirm {
+  flex: 2; padding: .72rem; border-radius: 10px;
+  border: none; background: var(--accent); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 700;
+  cursor: pointer; box-shadow: 0 3px 14px var(--accent-glow);
+  transition: opacity .2s, transform .15s;
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
+}
+.modal-confirm:hover { opacity: .88; transform: translateY(-1px); }
+
+/* ══ SUCCESS TOAST ══ */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 50px; padding: .7rem 1.4rem;
+  display: flex; align-items: center; gap: .7rem;
+  box-shadow: var(--card-shadow); z-index: 600;
+  font-size: .88rem; font-weight: 600; color: var(--text);
+  transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s;
+  opacity: 0;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast-icon { font-size: 1.1rem; }
+
+/* ══ FOOTER ══ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 3rem;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem;
+  background: var(--bg); transition: background .4s, border-color .4s;
+}
+.footer-brand .nav-logo { font-size: 1.4rem; }
+.footer-tagline { font-size: .88rem; color: var(--text3); margin-top: .5rem; line-height: 1.6; }
+.footer-col h4 { font-size: .85rem; font-weight: 700; color: var(--text); margin-bottom: .8rem; letter-spacing: .04em; }
+.footer-col a { display: block; font-size: .85rem; color: var(--text3); text-decoration: none; margin-bottom: .5rem; transition: color .2s; }
+.footer-col a:hover { color: var(--accent); }
+.footer-bottom {
+  border-top: 1px solid var(--border); padding: 1.5rem 3rem;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: .8rem; color: var(--text3);
+  background: var(--bg); transition: background .4s;
+}
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 900px) {
+  .right-panel { display: none; }
+  .editor-page { padding: 2rem 1.5rem; margin: 1.5rem; }
+  footer { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .left-panel { display: none; }
+  nav { padding: 0 1rem; gap: .8rem; }
+  .nav-story-title { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ FLOATING FORMAT BAR ══ -->
+<div class="float-bar" id="float-bar">
+  <button class="fb-btn bold" onclick="fmt('bold')" title="Bold">B</button>
+  <button class="fb-btn italic" onclick="fmt('italic')" title="Italic">I</button>
+  <button class="fb-btn" onclick="fmt('underline')" title="Underline" style="text-decoration:underline">U</button>
+  <button class="fb-btn" onclick="wrapQuote()" title="Quote">❝</button>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <a class="nav-logo" href="bookly.html">Book<span>ly</span></a>
+  <div class="nav-story-title" id="nav-title">Midnight Orchid <em>· Chapter 9</em></div>
+  <div class="save-indicator">
+    <div class="save-dot saved" id="save-dot"></div>
+    <span id="save-text">Saved</span>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="theme-icon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+    <button class="nav-btn-sm" onclick="previewStory()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Preview
+    </button>
+    <button class="btn-publish" onclick="openPublish()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Publish
+    </button>
+  </div>
+</nav>
+
+<!-- ══ WRITER LAYOUT ══ -->
+<div class="writer-wrap">
+
+  <!-- LEFT: Chapters -->
+  <div class="left-panel" id="left-panel">
+    <div class="lp-header">
+      <span class="lp-title">Chapters</span>
+      <button class="lp-add" onclick="addChapter()" title="Add chapter">+</button>
+    </div>
+
+    <div class="chapter-list" id="chapter-list">
+      <div class="ch-item" onclick="selectChapter(this,1)">
+        <span class="ch-drag">⠿</span>
+        <div class="ch-num-b">1</div>
+        <span class="ch-name">The First Petal</span>
+        <span class="ch-dot published"></span>
+      </div>
+      <div class="ch-item" onclick="selectChapter(this,2)">
+        <span class="ch-drag">⠿</span>
+        <div class="ch-num-b">2</div>
+        <span class="ch-name">A Garden of Shadows</span>
+        <span class="ch-dot published"></span>
+      </div>
+      <div class="ch-item" onclick="selectChapter(this,3)">
+        <span class="ch-drag">⠿</span>
+        <div class="ch-num-b">3</div>
+        <span class="ch-name">The Glass Garden</span>
+        <span class="ch-dot published"></span>
+      </div>
+      <div class="ch-item" onclick="selectChapter(this,4)">
+        <span class="ch-drag">⠿</span>
+        <div class="ch-num-b">4</div>
+        <span class="ch-name">What the Moon Hides</span>
+        <span class="ch-dot published"></span>
+      </div>
+      <div class="ch-item active" onclick="selectChapter(this,9)">
+        <span class="ch-drag">⠿</span>
+        <div class="ch-num-b">9</div>
+        <span class="ch-name">The Second Bloom</span>
+        <span class="ch-dot"></span>
+      </div>
+    </div>
+
+    <div class="lp-story-info">
+      <div class="lp-cover-mini">🌙</div>
+      <div class="lp-story-name">Midnight Orchid</div>
+      <div class="lp-story-meta" id="lp-meta">9 chapters · 34,200 words</div>
+    </div>
+  </div>
+
+  <!-- CENTRE: Editor -->
+  <div class="editor-area">
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <select class="tb-select" id="block-select" onchange="applyBlock(this.value)">
+        <option value="p">Paragraph</option>
+        <option value="h2">Heading 2</option>
+        <option value="h3">Heading 3</option>
+        <option value="blockquote">Quote</option>
+      </select>
+      <div class="toolbar-sep"></div>
+      <button class="tb-btn bold" onclick="fmt('bold')" title="Bold (Ctrl+B)">B</button>
+      <button class="tb-btn italic" onclick="fmt('italic')" title="Italic (Ctrl+I)">I</button>
+      <button class="tb-btn" onclick="fmt('underline')" title="Underline (Ctrl+U)" style="text-decoration:underline">U</button>
+      <button class="tb-btn" onclick="fmt('strikeThrough')" title="Strikethrough" style="text-decoration:line-through">S</button>
+      <div class="toolbar-sep"></div>
+      <button class="tb-btn" onclick="fmt('justifyLeft')" title="Left">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+      </button>
+      <button class="tb-btn" onclick="fmt('justifyCenter')" title="Center">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      </button>
+      <div class="toolbar-sep"></div>
+      <button class="tb-btn" onclick="insertSceneBreak()" title="Scene break">— ✦ —</button>
+      <button class="tb-btn" onclick="fmt('insertUnorderedList')" title="List">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>
+      </button>
+      <div class="toolbar-sep"></div>
+      <button class="tb-btn" onclick="document.execCommand('undo')" title="Undo (Ctrl+Z)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.62"/></svg>
+      </button>
+      <button class="tb-btn" onclick="document.execCommand('redo')" title="Redo (Ctrl+Y)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-3.62"/></svg>
+      </button>
+      <div class="toolbar-right">
+        <span class="word-count" id="word-count">0 words</span>
+      </div>
+    </div>
+
+    <!-- Chapter title bar -->
+    <div class="chapter-title-bar">
+      <span class="ch-label">Chapter 9</span>
+      <input class="ch-title-input" id="ch-title" type="text" value="The Second Bloom" placeholder="Chapter title…" oninput="onChapterTitleChange()">
+    </div>
+
+    <!-- Editor scroll -->
+    <div class="editor-scroll">
+      <div class="editor-page">
+        <div
+          class="editor-content"
+          id="editor"
+          contenteditable="true"
+          spellcheck="true"
+          data-placeholder="Begin your chapter here… let the words flow."
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Story settings -->
+  <div class="right-panel" id="right-panel">
+
+    <!-- Cover -->
+    <div class="rp-section">
+      <div class="rp-title">Story Cover</div>
+      <div class="cover-upload" onclick="triggerCoverUpload()">
+        <div class="cover-preview">🌙</div>
+        <div class="cover-preview-overlay">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Change cover
+        </div>
+      </div>
+      <input type="file" id="cover-input" accept="image/*" style="display:none" onchange="handleCover(this)">
+    </div>
+
+    <!-- Story details -->
+    <div class="rp-section">
+      <div class="rp-title">Story Details</div>
+      <div class="rp-field">
+        <label class="rp-label">Title</label>
+        <input class="rp-input" type="text" value="Midnight Orchid" placeholder="Your story title…">
+      </div>
+      <div class="rp-field">
+        <label class="rp-label">Tagline</label>
+        <input class="rp-input" type="text" placeholder="One sentence that hooks readers…" value="Some gardens only bloom when you're not supposed to be there.">
+      </div>
+      <div class="rp-field">
+        <label class="rp-label">Description</label>
+        <textarea class="rp-input" placeholder="Tell readers what your story is about…">A slow-burn fantasy romance about secrets kept in glass, the language of gardens, and the terrifying possibility of being truly seen.</textarea>
+      </div>
+    </div>
+
+    <!-- Genres & tags -->
+    <div class="rp-section">
+      <div class="rp-title">Genre &amp; Tags</div>
+      <div class="rp-field">
+        <label class="rp-label">Primary genre</label>
+        <select class="rp-select" id="genre-select">
+          <option>Romance</option>
+          <option selected>Fantasy Romance</option>
+          <option>Fantasy</option>
+          <option>Young Adult</option>
+          <option>Mystery</option>
+          <option>Thriller</option>
+          <option>Sci-Fi</option>
+          <option>Horror</option>
+          <option>Historical</option>
+          <option>Drama</option>
+          <option>Poetry</option>
+          <option>Short Stories</option>
+        </select>
+      </div>
+      <div class="rp-field">
+        <label class="rp-label">Tags <span style="font-weight:400;color:var(--text3)">(press Enter to add)</span></label>
+        <div class="tag-input-wrap" id="tag-wrap" onclick="document.getElementById('tag-text').focus()">
+          <span class="tag-chip">slowburn <span class="tag-remove" onclick="removeTag(this)">×</span></span>
+          <span class="tag-chip">fantasy <span class="tag-remove" onclick="removeTag(this)">×</span></span>
+          <span class="tag-chip">magic <span class="tag-remove" onclick="removeTag(this)">×</span></span>
+          <span class="tag-chip">enemies-to-lovers <span class="tag-remove" onclick="removeTag(this)">×</span></span>
+          <input class="tag-text-input" id="tag-text" placeholder="Add tag…" onkeydown="addTag(event)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="rp-section">
+      <div class="rp-title">Story Settings</div>
+      <div class="rp-field">
+        <label class="rp-label">Age rating</label>
+        <select class="rp-select">
+          <option selected>Everyone</option>
+          <option>Teen (13+)</option>
+          <option>Mature (18+)</option>
+        </select>
+      </div>
+      <div class="rp-field">
+        <label class="rp-label">Language</label>
+        <select class="rp-select">
+          <option selected>English</option>
+          <option>Spanish</option>
+          <option>French</option>
+          <option>Portuguese</option>
+          <option>German</option>
+        </select>
+      </div>
+      <div class="rp-field">
+        <label class="rp-label">Status</label>
+        <select class="rp-select">
+          <option>Ongoing</option>
+          <option selected>Complete</option>
+          <option>On Hiatus</option>
+        </select>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-lbl">Allow comments</span>
+        <div class="toggle-switch on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-lbl">Listed publicly</span>
+        <div class="toggle-switch on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-lbl">Copyright notice</span>
+        <div class="toggle-switch" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
+    <!-- Publish -->
+    <div class="rp-section">
+      <div class="rp-title">Publish</div>
+      <button class="btn-save-draft" onclick="saveDraft()">💾 Save as draft</button>
+      <button class="btn-publish-full" onclick="openPublish()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Publish chapter
+      </button>
+    </div>
+
+  </div><!-- /right-panel -->
+</div><!-- /writer-wrap -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <a class="nav-logo" href="bookly.html">Book<span>ly</span></a>
+    <p class="footer-tagline">Where every story finds<br>its reader. Since 2024.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Discover</h4>
+    <a href="#">Browse stories</a>
+    <a href="#">New releases</a>
+    <a href="#">Editor's picks</a>
+    <a href="#">Leaderboards</a>
+    <a href="#">Contests</a>
+  </div>
+  <div class="footer-col">
+    <h4>Write</h4>
+    <a href="#">Start a story</a>
+    <a href="#">Writer's hub</a>
+    <a href="#">Writing tips</a>
+    <a href="#">Bookly Pro</a>
+  </div>
+  <div class="footer-col">
+    <h4>Company</h4>
+    <a href="#">About us</a>
+    <a href="#">Blog</a>
+    <a href="#">Careers</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2026 Bookly. All rights reserved.</span>
+  <span>Made with 💜 for readers everywhere</span>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div class="modal-overlay" id="publish-modal" onclick="closePublishOutside(event)">
+  <div class="modal">
+    <div class="modal-title">Ready to publish? ✨</div>
+    <div class="modal-sub">We'll check a few things before your chapter goes live.</div>
+    <div class="modal-checklist">
+      <div class="mc-item ok">
+        <span class="mc-icon">📝</span>
+        <span class="mc-text">Chapter title added</span>
+        <span class="mc-check">✓</span>
+      </div>
+      <div class="mc-item ok">
+        <span class="mc-icon">📖</span>
+        <span class="mc-text">Story description complete</span>
+        <span class="mc-check">✓</span>
+      </div>
+      <div class="mc-item" id="content-check">
+        <span class="mc-icon">✍️</span>
+        <span class="mc-text" id="content-check-text">Chapter content (0 words)</span>
+        <span class="mc-check" id="content-check-icon">○</span>
+      </div>
+      <div class="mc-item ok">
+        <span class="mc-icon">🏷️</span>
+        <span class="mc-text">Tags added (4 tags)</span>
+        <span class="mc-check">✓</span>
+      </div>
+      <div class="mc-item warn">
+        <span class="mc-icon">🖼️</span>
+        <span class="mc-text">Cover image (using default)</span>
+        <span class="mc-check">⚠</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closePublish()">Not yet</button>
+      <button class="modal-confirm" id="modal-confirm-btn" onclick="publishChapter()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Publish now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon">🎉</span>
+  <span id="toast-msg">Chapter published!</span>
+</div>
+
+<script>
+/* ══ THEME ══ */
+function toggleTheme() {
+  const html = document.documentElement;
+  const dark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('theme-icon').innerHTML = dark
+    ? `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`
+    : `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+}
+
+/* ══ EDITOR FORMATTING ══ */
+function fmt(cmd) {
+  document.getElementById('editor').focus();
+  document.execCommand(cmd, false, null);
+}
+
+function insertSceneBreak() {
+  document.getElementById('editor').focus();
+  document.execCommand('insertHTML', false,
+    '<p style="text-align:center;color:var(--text3);letter-spacing:.3em;margin:1.5em 0;">✦ ✦ ✦</p><p></p>');
+}
+
+function applyBlock(val) {
+  document.getElementById('editor').focus();
+  document.execCommand('formatBlock', false, val);
+}
+
+function wrapQuote() {
+  document.getElementById('editor').focus();
+  document.execCommand('formatBlock', false, 'blockquote');
+}
+
+/* Word count */
+function countWords(text) {
+  return text.trim() ? text.trim().split(/\s+/).length : 0;
+}
+
+const editor = document.getElementById('editor');
+editor.addEventListener('input', () => {
+  const words = countWords(editor.innerText);
+  document.getElementById('word-count').textContent = words.toLocaleString() + ' word' + (words !== 1 ? 's' : '');
+  triggerSave();
+  updateModal();
+});
+
+/* ══ SAVE INDICATOR ══ */
+let saveTimer;
+function triggerSave() {
+  const dot = document.getElementById('save-dot');
+  const txt = document.getElementById('save-text');
+  dot.className = 'save-dot saving';
+  txt.textContent = 'Saving…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    dot.className = 'save-dot saved';
+    txt.textContent = 'Saved';
+  }, 1400);
+}
+
+/* ══ CHAPTER TITLE ══ */
+function onChapterTitleChange() {
+  const title = document.getElementById('ch-title').value || 'Untitled';
+  document.getElementById('nav-title').innerHTML = 'Midnight Orchid <em>· ' + title + '</em>';
+  triggerSave();
+}
+
+/* ══ CHAPTER LIST ══ */
+let chapterCount = 9;
+function selectChapter(el, num) {
+  document.querySelectorAll('.ch-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+function addChapter() {
+  chapterCount++;
+  const list = document.getElementById('chapter-list');
+  const div = document.createElement('div');
+  div.className = 'ch-item active';
+  div.onclick = function() { selectChapter(this, chapterCount); };
+  div.innerHTML = `
+    <span class="ch-drag">⠿</span>
+    <div class="ch-num-b">${chapterCount}</div>
+    <span class="ch-name">Chapter ${chapterCount}</span>
+    <span class="ch-dot"></span>`;
+  document.querySelectorAll('.ch-item').forEach(i => i.classList.remove('active'));
+  list.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('ch-title').value = '';
+  document.getElementById('ch-title').placeholder = 'Chapter ' + chapterCount + ' title…';
+  editor.innerHTML = '';
+  editor.focus();
+  document.getElementById('word-count').textContent = '0 words';
+  showToast('✨', 'New chapter created!');
+}
+
+/* ══ TAGS ══ */
+function addTag(e) {
+  if (e.key !== 'Enter') return;
+  const input = document.getElementById('tag-text');
+  const val = input.value.trim().toLowerCase().replace(/\s+/g, '-');
+  if (!val) return;
+  const wrap = document.getElementById('tag-wrap');
+  const chip = document.createElement('span');
+  chip.className = 'tag-chip';
+  chip.innerHTML = `${val} <span class="tag-remove" onclick="removeTag(this)">×</span>`;
+  wrap.insertBefore(chip, input);
+  input.value = '';
+}
+function removeTag(btn) {
+  btn.parentElement.remove();
+}
+
+/* ══ COVER ══ */
+function triggerCoverUpload() {
+  document.getElementById('cover-input').click();
+}
+function handleCover(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.querySelector('.cover-preview');
+    preview.style.backgroundImage = `url(${e.target.result})`;
+    preview.style.backgroundSize = 'cover';
+    preview.style.backgroundPosition = 'center';
+    preview.textContent = '';
+    showToast('🖼️', 'Cover updated!');
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+/* ══ FLOATING BAR ON SELECTION ══ */
+document.addEventListener('mouseup', e => {
+  const sel = window.getSelection();
+  const bar = document.getElementById('float-bar');
+  if (sel && sel.toString().trim() && editor.contains(sel.anchorNode)) {
+    const r = sel.getRangeAt(0).getBoundingClientRect();
+    bar.style.top = (r.top + window.scrollY - 46) + 'px';
+    bar.style.left = Math.max(8, r.left + r.width / 2 - 70) + 'px';
+    bar.classList.add('show');
+  } else {
+    setTimeout(() => bar.classList.remove('show'), 200);
+  }
+});
+
+/* ══ KEYBOARD SHORTCUTS ══ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault(); triggerSave();
+    showToast('💾', 'Draft saved!');
+  }
+});
+
+/* ══ DRAFT SAVE ══ */
+function saveDraft() {
+  triggerSave();
+  showToast('💾', 'Draft saved!');
+}
+
+/* ══ PREVIEW ══ */
+function previewStory() {
+  window.open('bookly-reader.html', '_blank');
+}
+
+/* ══ PUBLISH MODAL ══ */
+function updateModal() {
+  const words = countWords(editor.innerText);
+  const item = document.getElementById('content-check');
+  const txt  = document.getElementById('content-check-text');
+  const icon = document.getElementById('content-check-icon');
+  txt.textContent = `Chapter content (${words.toLocaleString()} words)`;
+  if (words >= 100) {
+    item.classList.add('ok'); item.classList.remove('warn');
+    icon.textContent = '✓';
+  } else if (words > 0) {
+    item.classList.add('warn'); item.classList.remove('ok');
+    icon.textContent = '⚠';
+  } else {
+    item.classList.remove('ok','warn');
+    icon.textContent = '○';
+  }
+}
+
+function openPublish() {
+  updateModal();
+  document.getElementById('publish-modal').classList.add('open');
+}
+function closePublish() {
+  document.getElementById('publish-modal').classList.remove('open');
+}
+function closePublishOutside(e) {
+  if (e.target === document.getElementById('publish-modal')) closePublish();
+}
+function publishChapter() {
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Publishing…';
+  btn.style.opacity = '.7';
+  const style = document.createElement('style');
+  style.textContent = '@keyframes spin { to { transform:rotate(360deg); } }';
+  document.head.appendChild(style);
+  setTimeout(() => {
+    closePublish();
+    // Mark chapter as published in list
+    const active = document.querySelector('.ch-item.active .ch-dot');
+    if (active) active.classList.add('published');
+    showToast('🎉', 'Chapter published! Your readers are notified.');
+    btn.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Publish now';
+    btn.style.opacity = '1';
+  }, 1800);
+}
+
+/* ══ TOAST ══ */
+let toastTimer;
+function showToast(icon, msg) {
+  const t = document.getElementById('toast');
+  document.querySelector('.toast-icon').textContent = icon;
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* Init */
+updateModal();
+editor.focus();
+</script>
+</body>
+</html>
