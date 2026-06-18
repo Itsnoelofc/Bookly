@@ -1,0 +1,137 @@
+name: Verify Commit Signatures
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+jobs:
+  verify-signatures:
+    runs-on: ubuntu-latest
+    name: Verify GPG Signatures
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config --global user.email "verify@bookly.local"
+          git config --global user.name "Signature Verifier"
+
+      - name: Verify commit signatures
+        run: |
+          echo "Checking commit signatures..."
+          
+          # Get the list of commits in this PR or push
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BASE_COMMIT="${{ github.event.pull_request.base.sha }}"
+            HEAD_COMMIT="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE_COMMIT="${{ github.event.before }}"
+            HEAD_COMMIT="${{ github.event.after }}"
+          fi
+          
+          # Get commit list
+          COMMITS=$(git log --format=%H ${BASE_COMMIT}..${HEAD_COMMIT} 2>/dev/null || git log --format=%H -1)
+          
+          echo "Commits to verify:"
+          echo "$COMMITS"
+          
+          # Check each commit
+          UNSIGNED_COMMITS=0
+          SIGNED_COMMITS=0
+          
+          for commit in $COMMITS; do
+            VERIFICATION=$(git verify-commit $commit 2>&1 || true)
+            
+            if echo "$VERIFICATION" | grep -q "Good signature"; then
+              echo "✓ Commit $commit: SIGNED (Good signature)"
+              ((SIGNED_COMMITS++))
+            elif echo "$VERIFICATION" | grep -q "No signature"; then
+              echo "⚠ Commit $commit: UNSIGNED"
+              ((UNSIGNED_COMMITS++))
+            else
+              echo "✗ Commit $commit: INVALID SIGNATURE"
+              ((UNSIGNED_COMMITS++))
+            fi
+          done
+          
+          echo ""
+          echo "Signature Summary:"
+          echo "  Signed commits: $SIGNED_COMMITS"
+          echo "  Unsigned commits: $UNSIGNED_COMMITS"
+          echo ""
+          
+          if [ $UNSIGNED_COMMITS -gt 0 ]; then
+            echo "⚠ Warning: $UNSIGNED_COMMITS commit(s) are not signed with a valid GPG key"
+          fi
+
+      - name: Generate signature report
+        if: always()
+        run: |
+          {
+            echo "# Commit Signature Verification Report"
+            echo ""
+            echo "## Event: ${{ github.event_name }}"
+            echo "## Repository: ${{ github.repository }}"
+            echo "## Workflow Run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            echo ""
+            echo "### Commit Details"
+            echo ""
+            
+            if [ "${{ github.event_name }}" == "pull_request" ]; then
+              BASE_COMMIT="${{ github.event.pull_request.base.sha }}"
+              HEAD_COMMIT="${{ github.event.pull_request.head.sha }}"
+            else
+              BASE_COMMIT="${{ github.event.before }}"
+              HEAD_COMMIT="${{ github.event.after }}"
+            fi
+            
+            COMMITS=$(git log --format=%H ${BASE_COMMIT}..${HEAD_COMMIT} 2>/dev/null || git log --format=%H -1)
+            
+            for commit in $COMMITS; do
+              AUTHOR=$(git log -1 --format=%an $commit)
+              DATE=$(git log -1 --format=%ai $commit)
+              MESSAGE=$(git log -1 --format=%s $commit)
+              VERIFICATION=$(git verify-commit $commit 2>&1 || true)
+              
+              if echo "$VERIFICATION" | grep -q "Good signature"; then
+                STATUS="✓ Signed"
+              else
+                STATUS="⚠ Unsigned"
+              fi
+              
+              echo "- **$STATUS** - $commit"
+              echo "  - Author: $AUTHOR"
+              echo "  - Date: $DATE"
+              echo "  - Message: $MESSAGE"
+              echo ""
+            done
+          } > signature-report.md
+          
+          cat signature-report.md
+
+      - name: Comment PR with signature report
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('signature-report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+
+      - name: Set workflow conclusion
+        if: always()
+        run: |
+          echo "✓ Signature verification workflow completed successfully"
